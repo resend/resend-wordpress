@@ -1,0 +1,32 @@
+{
+    "$schema": "https://getcomposer.org/schema.json",
+    "name": "resend/resend-wordpress",
+    "description": "Resend plugin for Wordpress",
+    "type": "wordpress-plugin",
+    "license": "GPL-2.0-or-later",
+    "authors": [
+        {
+            "name": "Resend and contributors",
+            "homepage": "https://github.com/resend/resend-laravel/contributors"
+        }
+    ],
+    "scripts": {
+        "lint": "phpcs",
+        "format": "phpcbf"
+    },
+    "require": {
+        "php": ">=7.2.24|^8"
+    },
+    "require-dev": {
+        "dealerdirect/phpcodesniffer-composer-installer": "^1.0",
+        "phpcompatibility/phpcompatibility-wp": "^2.1",
+        "wp-coding-standards/wpcs": "^3.0"
+    },
+    "config": {
+        "sort-packages": true,
+        "allow-plugins": {
+            "dealerdirect/phpcodesniffer-composer-installer": true
+        },
+		"lock": false
+    }
+}
