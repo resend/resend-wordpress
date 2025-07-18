@@ -56,7 +56,7 @@ if ( ! isset( $type ) ) {
 		<span class="resend-alert-icon">
 			<?php Resend::view( 'icon', array( 'type' => 'x-circle' ) ); ?>
 		</span>
-		<p class="resend-alert-text"><?php esc_html( $message ); ?></p>
+		<p class="resend-alert-text"><?php echo esc_html( $message ); ?></p>
 	</div>
 
 <?php endif; ?>

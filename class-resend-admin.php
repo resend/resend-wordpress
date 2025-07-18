@@ -134,8 +134,18 @@ class Resend_Admin {
 					$message = '';
 
 					if ( isset( $type['message'] ) ) {
-						$raw_message = is_array( $type['message'] ) && isset( $type['message']['message'] ) ? $type['message']['message'] : $type['message'];
-						$message     = wp_kses( $raw_message, array() );
+						$raw_message = '';
+						if ( is_array( $type['message'] ) ) {
+							if ( isset( $type['message']['message'] ) ) {
+								$raw_message = $type['message']['message'];
+							} elseif ( isset( $type['message']['error'] ) ) {
+								$raw_message = $type['message']['error'];
+							}
+						} else {
+							$raw_message = $type['message'];
+						}
+
+						$message = wp_kses( $raw_message, array() );
 					}
 
 					if ( isset( $type['type'] ) ) {
