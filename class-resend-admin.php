@@ -135,7 +135,7 @@ class Resend_Admin {
 
 					if ( isset( $type['message'] ) ) {
 						$incoming_message = $type['message'];
-						$raw_message = $incoming_message;
+						$raw_message      = $incoming_message;
 
 						if ( is_array( $incoming_message ) ) {
 							$raw_message = $incoming_message['message'] ?? $incoming_message['error'];
