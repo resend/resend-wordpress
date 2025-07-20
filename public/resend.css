@@ -55,6 +55,14 @@ a.resend-button {
     transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
+.resend-button:disabled,
+.resend-button[disabled],
+a.resend-button:disabled,
+a.resend-button[disabled] {
+	pointer-events: none;
+	opacity: 0.5;
+}
+
 .resend-button svg {
     opacity: 0.7;
     width: 16px;
