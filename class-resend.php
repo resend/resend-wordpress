@@ -34,11 +34,11 @@ class Resend {
 		return apply_filters( 'resend_get_api_key', get_option( 'resend_api_key' ) );
 	}
 
-	public static function verify_key( $key ) {
+	public static function is_valid_key( $key ) {
 		if ( strpos( $key, 're_' ) !== 0 ) {
-			return 'invalid';
+			return false;
 		}
 
-		return 'valid';
+		return true;
 	}
 }

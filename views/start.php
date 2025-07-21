@@ -2,7 +2,7 @@
 	<div class="resend-start-container">
 		<?php Resend::view( 'logo' ); ?>
 
-		<?php Resend_Admin::display_status(); ?>
+		<div id="resend_alerts"></div>
 
 		<div>
 			<h3 class="resend-h3"><?php esc_html_e( 'Connect your site to Resend', 'resend' ); ?></h3>
@@ -45,11 +45,9 @@
 						<div>
 							<h3 class="resend-h3"><?php esc_html_e( 'Enter your API key', 'resend' ); ?></h3>
 							<p class="resend-setup-steps-desc"><?php esc_html_e( 'Copy your API key from the Resend dashboard, and paste it into the field below.', 'resend' ); ?></p>
-							<form action="<?php echo esc_url( Resend_Admin::get_page_url() ); ?>" method="post">
-								<?php wp_nonce_field( Resend_Admin::NONCE ); ?>
-								<input type="hidden" name="action" value="enter-key">
+							<form id="resend-api-key-form" autocomplete="off" method="post">
 								<div>
-									<input id="key" class="resend-input" name="key" type="password" value="" placeholder="<?php esc_attr_e( 're_xxxxxxxxx', 'resend' ); ?>" style="width: 100%;" autocomplete="off" data-1p-ignore data-lpignore="true" data-protonpass-ignore="true">
+									<input id="resend_api_key" class="resend-input" name="key" type="password" value="" placeholder="<?php esc_attr_e( 're_xxxxxxxxx', 'resend' ); ?>" style="width: 100%;" autocomplete="off" data-1p-ignore data-lpignore="true" data-protonpass-ignore="true">
 								</div>
 								<div style="margin-top: 16px;">
 									<input type="submit" class="resend-button" value="<?php esc_attr_e( 'Connect with API key', 'resend' ); ?>">

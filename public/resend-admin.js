@@ -31,6 +31,32 @@ jQuery(function ($) {
 		$("#resend_alerts").html($alert);
 	}
 
+	$("#resend-api-key-form").on("submit", function (e) {
+		e.preventDefault();
+		var $form = $(this);
+		var $button = $form.find('[type="submit"]');
+		setButtonLoading($button, "Saving...");
+		$.post(
+			resendAjax.ajax_url,
+			{
+				action: "resend_enter_key",
+				_wpnonce: resendAjax.nonce,
+				key: $form.find("#resend_api_key").val(),
+			},
+			function (response) {
+				var type = response.data?.type;
+				displayAlert(response);
+				if (type === "new-key-valid") {
+					setTimeout(function () {
+						location.reload();
+					}, 2000);
+				} else {
+					resetButton($button);
+				}
+			}
+		);
+	});
+
 	$("#resend-test-email-form").on("submit", function (e) {
 		e.preventDefault();
 		var $form = $(this);
