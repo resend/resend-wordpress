@@ -6,29 +6,28 @@ class Resend_Admin {
 
 	private static $initiated = false;
 
-	private static $notices = array();
+	private static $status = array();
 
 	public static function init() {
 		if ( ! self::$initiated ) {
 			self::init_hooks();
-		}
-
-		if ( isset( $_POST['action'] ) && 'enter-key' === $_POST['action'] ) {
-			self::enter_api_key();
-		} elseif ( isset( $_POST['action'] ) && 'send-test' === $_POST['action'] ) {
-			self::send_test_email();
 		}
 	}
 
 	public static function init_hooks() {
 		self::$initiated = true;
 
+		// Admin
 		add_action( 'admin_init', array( 'Resend_Admin', 'admin_init' ) );
 		add_action( 'admin_menu', array( 'Resend_Admin', 'admin_menu' ), 5 );
 		add_action( 'admin_enqueue_scripts', array( 'Resend_Admin', 'load_resources' ) );
 
-		add_filter( 'plugin_action_links', array( 'Resend_Admin', 'plugin_action_links' ), 10, 2 );
+		// AJAX handlers
+		add_action( 'wp_ajax_resend_enter_key', array( 'Resend_Admin', 'ajax_enter_api_key' ) );
+		add_action( 'wp_ajax_resend_send_test', array( 'Resend_Admin', 'ajax_send_test_email' ) );
 
+		// Plugin links
+		add_filter( 'plugin_action_links', array( 'Resend_Admin', 'plugin_action_links' ), 10, 2 );
 		add_filter( 'plugin_action_links_' . plugin_basename( plugin_dir_path( __FILE__ ) . '/resend.php' ), array( 'Resend_Admin', 'admin_plugin_settings_link' ) );
 	}
 
@@ -84,8 +83,17 @@ class Resend_Admin {
 			wp_enqueue_style( 'resend-admin' );
 
 			$resend_admin_js_path = 'public/resend-admin.js';
-			wp_register_script( 'resend-admin.js', plugin_dir_url( __FILE__ ) . $resend_admin_js_path, array(), self::get_asset_file_version( $resend_admin_js_path ) );
-			wp_enqueue_script( 'resend-admin.js' );
+			wp_register_script( 'resend-admin', plugin_dir_url( __FILE__ ) . $resend_admin_js_path, array( 'jquery' ), self::get_asset_file_version( $resend_admin_js_path ), array( 'in_footer' => true ) );
+			wp_enqueue_script( 'resend-admin' );
+			wp_localize_script(
+				'resend-admin',
+				'resendAjax',
+				array(
+					'resend_url' => self::get_page_url(),
+					'ajax_url' => admin_url( 'admin-ajax.php' ),
+					'nonce'    => wp_create_nonce( self::NONCE ),
+				)
+			);
 		}
 	}
 
@@ -120,43 +128,84 @@ class Resend_Admin {
 		Resend::view( 'config' );
 	}
 
-	public static function add_status( $message, $type = 'resend-error' ) {
-		self::$notices['status'] = array(
+	/**
+	 * Add a notice with the given type and message.
+	 *
+	 * @param string $type
+	 * @param null|string $message
+	 * @return void
+	 */
+	public static function add_status( $type = 'resend-error', $message ) {
+		self::$status = array(
 			'type'    => $type,
 			'message' => $message,
 		);
 	}
 
-	public static function display_status() {
-		if ( ! empty( self::$notices ) ) {
-			foreach ( self::$notices as $index => $type ) {
-				if ( is_array( $type ) ) {
-					$message = '';
-
-					if ( isset( $type['message'] ) ) {
-						$incoming_message = $type['message'];
-						$raw_message      = $incoming_message;
-
-						if ( is_array( $incoming_message ) ) {
-							$raw_message = $incoming_message['message'] ?? $incoming_message['error'];
-						}
-
-						$message = wp_kses( $raw_message, array() );
-					}
-
-					if ( isset( $type['type'] ) ) {
-						$type = wp_kses( $type['type'], array() );
-						Resend::view( 'notice', compact( 'type', 'message' ) );
-
-						unset( self::$notices[ $index ] );
-					}
-				} else {
-					Resend::view( 'notice', compact( 'type' ) );
-
-					unset( self::$notices[ $index ] );
-				}
-			}
+	/**
+	 * Get the JSON status payload for the given type.
+	 */
+	public static function json_status( $type, $message = null ) {
+		if ( ! empty( self::$status ) ) {
+			$message = self::get_status_message( self::$status['type'], self::$status['message'] );
+		} else {
+			$message = self::get_status_message( $type, $message );
 		}
+
+		return array(
+			'type'    => $type,
+			'message' => $message,
+		);
+	}
+
+	/**
+	 * Get the status message based on the given type or use the provided message.
+	 *
+	 * @return string
+	 */
+	protected static function get_status_message( $type, $message = null ) {
+		if ( $message ) {
+			if ( is_array( $message ) ) {
+				$message = $message['message'] ?? $message['error'];
+			}
+
+			$message = wp_kses( $message, array() );
+
+			return $message;
+		}
+
+		$message = '';
+
+		switch ( $type ) {
+			case 'not-allowed':
+				$message = __( 'You are not allowed to perform this action!', 'resend' );
+				break;
+			case 'new-key-valid':
+				$message = __( 'Resend API key has updated successfull.', 'resend' );
+				break;
+			case 'no-change-to-key':
+				$message = __( 'Unable to update your API key.', 'resend' );
+				break;
+			case 'new-key-empty':
+				$message = __( 'You did not enter an API key. Please try again.', 'resend' );
+				break;
+			case 'new-key-invalid':
+				$message = __( 'The API key you entered is invalid. Please double-check it.', 'resend' );
+				break;
+			case 'test-email-not-set':
+				$message = __( 'Please provide a valid email address to send a test email.', 'resend' );
+				break;
+			case 'test-email-sent':
+				$message = __( 'Test email sent!', 'resend' );
+				break;
+			case 'test-email-failed':
+				$message = __( 'Failed to send a test email.', 'resend' );
+				break;
+			default:
+				$message = $type;
+		}
+
+		return $message;
 	}
 
 	/**
@@ -211,71 +260,58 @@ class Resend_Admin {
 		);
 	}
 
-	public static function enter_api_key() {
+	public static function ajax_enter_api_key() {
 		if ( ! current_user_can( 'manage_options' ) ) {
-			return;
+			wp_send_json_error( self::json_status( 'not-allowed' ) );
 		}
 
-		if ( ! wp_verify_nonce( $_POST['_wpnonce'], self::NONCE ) ) {
-			return false;
-		}
+		check_admin_referer( self::NONCE );
 
-		$new_key = $_POST['key'];
+		$new_key = sanitize_text_field( isset( $_POST['key'] ) ? wp_unslash( $_POST['key'] ) : '' );
 		$old_key = Resend::get_api_key();
+
+		$result = array( false, 'no-change-to-key' );
 
 		if ( empty( $new_key ) ) {
 			if ( ! empty( $old_key ) ) {
 				delete_option( 'resend_api_key' );
 			}
-			self::$notices['status'] = 'new-key-empty';
+			$result = array( false, 'new-key-empty' );
 		} elseif ( $new_key !== $old_key ) {
-			self::save_key( $new_key );
+			if ( Resend::is_valid_key( $new_key ) ) {
+				update_option( 'resend_api_key', $new_key );
+				$result = array( true, 'new-key-valid' );
+			} else {
+				$result = array( false, 'new-key-invalid' );
+			}
 		}
 
-		return true;
+		list($is_successful, $status) = $result;
+
+		$is_successful
+			? wp_send_json_success( self::json_status( $status ) )
+			: wp_send_json_error( self::json_status( $status ) );
 	}
 
-	public static function save_key( $api_key ) {
-		$key_status = Resend::verify_key( $api_key );
-
-		if ( 'valid' === $key_status ) {
-			update_option( 'resend_api_key', $api_key );
-
-			self::$notices['status'] = 'new-key-valid';
-		} else {
-			self::$notices['status'] = 'new-key-invalid';
-		}
-	}
-
-	public static function send_test_email() {
+	public static function ajax_send_test_email() {
 		if ( ! current_user_can( 'manage_options' ) ) {
-			return;
+			wp_send_json_error( self::json_status( 'not-allowed' ) );
 		}
 
-		if ( ! wp_verify_nonce( $_POST['_wpnonce'], self::NONCE ) ) {
-			return false;
-		}
+		check_admin_referer( self::NONCE );
 
-		if ( isset( $_POST['email'] ) && is_email( $_POST['email'] ) ) {
-			$to = sanitize_email( $_POST['email'] );
-		} else {
-			self::$notices['status'] = 'test-email-not-set';
-			return;
+		$email = sanitize_email( isset( $_POST['email'] ) ? wp_unslash( $_POST['email'] ) : '' );
+		if ( ! $email || ! is_email( $email ) ) {
+			wp_send_json_error( self::json_status( 'test-email-not-set' ) );
 		}
 
 		$subject = 'Resend Test: ' . html_entity_decode( get_bloginfo( 'name' ) );
 		$message = 'This is a test email sent using the Resend plugin.';
-		$headers = array();
+		$result  = wp_mail( $email, $subject, $message );
 
-		$response = wp_mail( $to, $subject, $message, $headers );
-
-		if ( false !== $response ) {
-			self::$notices['status'] = 'test-email-sent';
-		} else {
-			// self::$notices['status'] = 'test-email-failed';
-		}
-
-		return true;
+		$result
+			? wp_send_json_success( self::json_status( 'test-email-sent' ) )
+			: wp_send_json_error( self::json_status( 'test-email-failed' ) );
 	}
 
 	public static function plugin_action_links( $links, $file ) {
@@ -287,7 +323,8 @@ class Resend_Admin {
 	}
 
 	public static function get_page_url( $page = 'config' ) {
-		$args = array( 'page' => 'resend' );
+		$base_url = admin_url( 'options-general.php' );
+		$args     = array( 'page' => 'resend' );
 
 		if ( 'stats' === $page ) {
 			$args = array(
@@ -301,7 +338,7 @@ class Resend_Admin {
 			);
 		}
 
-		return add_query_arg( $args, menu_page_url( 'resend', false ) );
+		return add_query_arg( $args, $base_url );
 	}
 
 	public static function get_asset_file_version( $relative_path ) {

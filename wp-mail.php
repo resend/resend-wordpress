@@ -105,7 +105,7 @@ function wp_mail( $to, $subject, $message, $headers = '', $attachments = array()
 
 	if ( is_wp_error( $response ) || 200 !== wp_remote_retrieve_response_code( $response ) ) {
 		do_action( 'wp_mail_failed', new WP_Error( 'wp_mail_failed' ) );
-		Resend_Admin::add_status( json_decode( wp_remote_retrieve_body( $response ), true ), 'resend-error' );
+		Resend_Admin::add_status( 'resend-error', json_decode( wp_remote_retrieve_body( $response ), true ) );
 		return false;
 	}
 

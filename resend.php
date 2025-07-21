@@ -4,14 +4,16 @@
  * @package Resend
  */
 /**
+ * @wordpress-plugin
  * Plugin Name: Resend
  * Plugin URI: https://resend.com
  * Description: The best API to reach humans instead of spam folders. Build, test, and deliver transactional emails at scale.
- * Version: 1.0.0
  * Requires at least: 5.8
+ * Version: 1.0.0
  * Requires PHP: 7.2
  * Author: Resend
  * Author URI: https://resend.com
+ * License: GPL-2.0-or-later
  * Text Domain: resend
  */
 
