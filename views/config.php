@@ -55,7 +55,7 @@ $current_user_email = $current_user->user_email;
 						<input type="hidden" name="action" value="send-test">
 						<div>
 							<label for="test_email" class="resend-label"><?php esc_html_e( 'Email address', 'resend' ); ?></label>
-							<input id="test_email" name="email" type="email" class="resend-input" value="<?php esc_attr( $current_user_email, 'resend' ); ?>" autocomplete="email" required>
+							<input id="test_email" name="email" type="email" class="resend-input" value="<?php echo esc_attr( $current_user_email ); ?>" autocomplete="email" required>
 						</div>
 						<div style="margin-top: 16px;">
 							<input type="submit" class="resend-button is-primary" value="<?php esc_attr_e( 'Send test email', 'resend' ); ?>">
