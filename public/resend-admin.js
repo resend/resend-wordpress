@@ -1,4 +1,17 @@
 jQuery(function ($) {
+	var resendPageUrl = new URL(window.location.href);
+
+	if (
+		resendPageUrl.searchParams.has("status") &&
+		resendPageUrl.searchParams.get("status") == "connected"
+	) {
+		var response = {
+			success: true,
+			data: { message: "Resend is now connected to your site." },
+		};
+		displayAlert(response);
+	}
+
 	function setButtonLoading($button, loadingText) {
 		$button.prop("disabled", true);
 	}
@@ -45,12 +58,10 @@ jQuery(function ($) {
 			},
 			function (response) {
 				var type = response.data?.type;
-				displayAlert(response);
 				if (type === "new-key-valid") {
-					setTimeout(function () {
-						location.reload();
-					}, 2000);
+					window.location.href = resendAjax.resend_url + "&status=connected";
 				} else {
+					displayAlert(response);
 					resetButton($button);
 				}
 			}

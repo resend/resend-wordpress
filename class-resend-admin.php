@@ -89,6 +89,7 @@ class Resend_Admin {
 				'resend-admin',
 				'resendAjax',
 				array(
+					'resend_url' => self::get_page_url(),
 					'ajax_url' => admin_url( 'admin-ajax.php' ),
 					'nonce'    => wp_create_nonce( self::NONCE ),
 				)
@@ -180,7 +181,7 @@ class Resend_Admin {
 				$message = __( 'You are not allowed to perform this action!', 'resend' );
 				break;
 			case 'new-key-valid':
-				$message = __( 'Resend is now connected to your site.', 'resend' );
+				$message = __( 'Resend API key has updated successfull.', 'resend' );
 				break;
 			case 'no-change-to-key':
 				$message = __( 'Unable to update your API key.', 'resend' );
