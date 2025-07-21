@@ -124,7 +124,6 @@ function resendCompleteKeyStep() {
 
 function resendTogglePassword(element, inputId) {
 	const input = document.getElementById(inputId);
-	console.log(element);
 
 	const showIcon = element.querySelector("#show-password");
 	const hideIcon = element.querySelector("#hide-password");
