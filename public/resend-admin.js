@@ -1,15 +1,7 @@
 jQuery(function ($) {
-	var resendPageUrl = new URL(window.location.href);
-
-	if (
-		resendPageUrl.searchParams.has("status") &&
-		resendPageUrl.searchParams.get("status") == "connected"
-	) {
-		var response = {
-			success: true,
-			data: { message: "Resend is now connected to your site." },
-		};
-		displayAlert(response);
+	var $resendAlerts = $("#resend_alerts");
+	if ($resendAlerts.data("message") && $resendAlerts.data("success")) {
+		displayAlert($resendAlerts.data("message"), $resendAlerts.data("success"));
 	}
 
 	function setButtonLoading($button, loadingText) {
@@ -20,11 +12,11 @@ jQuery(function ($) {
 		$button.prop("disabled", false);
 	}
 
-	function displayAlert(response) {
-		var message = response.data?.message || "Unknown response";
-		var alertClass = response.success ? "is-success" : "is-danger";
+	function displayAlert(message = "Unknown response", success = true) {
+		var message = message || "Unknown response";
+		var alertClass = success ? "is-success" : "is-danger";
 
-		var $alertIcon = response.success
+		var $alertIcon = success
 			? $(
 					`<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" /></svg>`
 			  )
@@ -40,8 +32,7 @@ jQuery(function ($) {
 		`);
 
 		$alert.find(".resend-alert-icon").html($alertIcon);
-
-		$("#resend_alerts").html($alert);
+		$resendAlerts.html($alert);
 	}
 
 	$("#resend-api-key-form").on("submit", function (e) {
@@ -61,7 +52,7 @@ jQuery(function ($) {
 				if (type === "new-key-valid") {
 					window.location.href = resendAjax.resend_url + "&status=connected";
 				} else {
-					displayAlert(response);
+					displayAlert(response.data?.message, response.success);
 					resetButton($button);
 				}
 			}
@@ -81,7 +72,7 @@ jQuery(function ($) {
 				email: $form.find("#test_email").val(),
 			},
 			function (response) {
-				displayAlert(response);
+				displayAlert(response.data?.message, response.success);
 			}
 		).always(function () {
 			resetButton($button);
