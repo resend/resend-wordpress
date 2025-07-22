@@ -90,8 +90,8 @@ class Resend_Admin {
 				'resendAjax',
 				array(
 					'resend_url' => self::get_page_url(),
-					'ajax_url' => admin_url( 'admin-ajax.php' ),
-					'nonce'    => wp_create_nonce( self::NONCE ),
+					'ajax_url'   => admin_url( 'admin-ajax.php' ),
+					'nonce'      => wp_create_nonce( self::NONCE ),
 				)
 			);
 		}
@@ -125,7 +125,19 @@ class Resend_Admin {
 	}
 
 	public static function display_configuration_page() {
-		Resend::view( 'config' );
+		$status = $_GET['status'];
+		$args   = array();
+
+		if ( 'connected' === $status ) {
+			$args = array(
+				'notice' => array(
+					'message' => self::json_status( 'connected' )['message'],
+					'success' => true,
+				),
+			);
+		}
+
+		Resend::view( 'config', $args );
 	}
 
 	/**
@@ -135,7 +147,7 @@ class Resend_Admin {
 	 * @param null|string $message
 	 * @return void
 	 */
-	public static function add_status( $type = 'resend-error', $message ) {
+	public static function add_status( $type, $message ) {
 		self::$status = array(
 			'type'    => $type,
 			'message' => $message,
@@ -177,6 +189,9 @@ class Resend_Admin {
 		$message = '';
 
 		switch ( $type ) {
+			case 'connected':
+				$message = __( 'Resend is now connected to your site.', 'resend' );
+				break;
 			case 'not-allowed':
 				$message = __( 'You are not allowed to perform this action!', 'resend' );
 				break;

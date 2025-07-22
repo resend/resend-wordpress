@@ -1,12 +1,19 @@
 <?php
 $current_user       = wp_get_current_user();
 $current_user_email = $current_user->user_email;
+
+$notice_message    = isset( $notice ) && isset( $notice['message'] ) ? $notice['message'] : null;
+$notice_is_success = isset( $notice ) && isset( $notice['success'] ) ? $notice['success'] : false;
 ?>
 <div class="resend-plugin-container">
 	<div class="resend-config-container">
 		<?php Resend::view( 'logo', array( 'dashboard' => true ) ); ?>
 
-		<div id="resend_alerts"></div>
+		<?php if ( isset( $notice_message ) ) : ?>
+			<div id="resend_alerts" data-message="<?php echo esc_attr( $notice_message ); ?>" data-success="<?php echo esc_attr( $notice_is_success ); ?>"></div>
+		<?php else : ?>
+			<div id="resend_alerts"></div>
+		<?php endif; ?>
 
 		<div class="resend-card-list">
 			<section class="resend-card">
