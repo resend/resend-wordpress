@@ -4,10 +4,10 @@ Resend plugin for Wordpress.
 
 ## Install
 
-**Option A: Upload via admin**
+**Option A: Upload via WordPress Admin Panel**
 
-1. Download the plugin ZIP.
-2. In your WordPress admin, go to **Plugins → Add Plugin → Upload Plugin**, upload the ZIP, and activate the plugin.
+1. Download the plugin as a ZIP.
+2. In your WordPress admin panel, go to **Plugins → Add Plugin → Upload Plugin**, upload the ZIP, press **Install**, and activate the plugin once Installed.
 
 **Option B: Manual install**
 
