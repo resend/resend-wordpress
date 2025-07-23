@@ -1,5 +1,5 @@
 jQuery(function ($) {
-	var $resendAlerts = $("#resend_alerts");
+	const $resendAlerts = $("#resend_alerts");
 	if ($resendAlerts.data("message") && $resendAlerts.data("success")) {
 		displayAlert($resendAlerts.data("message"), $resendAlerts.data("success"));
 	}
@@ -13,10 +13,10 @@ jQuery(function ($) {
 	}
 
 	function displayAlert(message = "Unknown response", success = true) {
-		var message = message || "Unknown response";
-		var alertClass = success ? "is-success" : "is-danger";
+		message = message || "Unknown response";
 
-		var $alertIcon = success
+		const alertClass = success ? "is-success" : "is-danger";
+		const $alertIcon = success
 			? $(
 					`<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" /></svg>`
 			  )
@@ -24,7 +24,7 @@ jQuery(function ($) {
 					`<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m9.75 9.75 4.5 4.5m0-4.5-4.5 4.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" /></svg>`
 			  );
 
-		var $alert = $(`
+		const $alert = $(`
 			<div class="resend-alert ${alertClass}">
 				<span class="resend-alert-icon"></span>
 				<p class="resend-alert-text">${message}</p>
@@ -37,8 +37,8 @@ jQuery(function ($) {
 
 	$("#resend-api-key-form").on("submit", function (e) {
 		e.preventDefault();
-		var $form = $(this);
-		var $button = $form.find('[type="submit"]');
+		const $form = $(this);
+		const $button = $form.find('[type="submit"]');
 		setButtonLoading($button, "Saving...");
 		$.post(
 			resendAjax.ajax_url,
@@ -48,7 +48,7 @@ jQuery(function ($) {
 				key: $form.find("#resend_api_key").val(),
 			},
 			function (response) {
-				var type = response.data?.type;
+				const type = response.data?.type;
 				if (type === "new-key-valid") {
 					window.location.href = resendAjax.resend_url + "&status=connected";
 				} else {
@@ -61,8 +61,8 @@ jQuery(function ($) {
 
 	$("#resend-test-email-form").on("submit", function (e) {
 		e.preventDefault();
-		var $form = $(this);
-		var $button = $form.find('[type="submit"]');
+		const $form = $(this);
+		const $button = $form.find('[type="submit"]');
 		setButtonLoading($button, "Sending...");
 		$.post(
 			resendAjax.ajax_url,
@@ -78,40 +78,38 @@ jQuery(function ($) {
 			resetButton($button);
 		});
 	});
+
+	// Onboarding
+
+	function resendCompleteKeyStep() {
+		const $createKeyStep = $(".resend-setup-step-create-key");
+		const $enterKeyStep = $(".resend-setup-step-enter-key");
+
+		const $createKeyStepAction = $createKeyStep.find(
+			".resend-setup-steps-actions"
+		);
+		const $enterKeyStepAction = $enterKeyStep.find(".resend-button");
+
+		$createKeyStep.addClass("is-complete");
+		$createKeyStepAction.remove();
+
+		$enterKeyStep.removeClass("is-disabled");
+		$enterKeyStepAction.addClass("is-primary");
+	}
+
+	$("#resend-use-existing-key").on("click", function (e) {
+		e.preventDefault();
+		const $enterKeyStep = $(".resend-setup-step-enter-key");
+		resendCompleteKeyStep();
+		$enterKeyStep.find(".resend-input").focus();
+	});
+
+	$("#resend-create-key").on("click", function (e) {
+		setTimeout(function () {
+			resendCompleteKeyStep();
+		}, 500);
+	});
 });
-
-function resendCreateKey() {
-	setTimeout(function () {
-		resendCompleteKeyStep();
-	}, 500);
-}
-
-function resendUseExistingKey() {
-	setTimeout(function () {
-		const enterKeyStep = document.querySelector(".resend-setup-step-enter-key");
-
-		resendCompleteKeyStep();
-
-		const enterKeyInput = enterKeyStep.querySelector(".resend-input");
-		enterKeyInput.focus();
-	}, 100);
-}
-
-function resendCompleteKeyStep() {
-	const createKeyStep = document.querySelector(".resend-setup-step-create-key");
-	const enterKeyStep = document.querySelector(".resend-setup-step-enter-key");
-
-	const createKeyStepAction = createKeyStep.querySelector(
-		".resend-setup-steps-actions"
-	);
-	const enterKeyStepAction = enterKeyStep.querySelector(".resend-button");
-
-	createKeyStep.classList.add("is-complete");
-	createKeyStepAction.remove();
-
-	enterKeyStep.classList.remove("is-disabled");
-	enterKeyStepAction.classList.add("is-primary");
-}
 
 function resendTogglePassword(element, inputId) {
 	const input = document.getElementById(inputId);
