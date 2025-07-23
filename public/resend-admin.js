@@ -109,24 +109,21 @@ jQuery(function ($) {
 			resendCompleteKeyStep();
 		}, 500);
 	});
-
-	// Password Toggle
-
-	function resendTogglePassword(element, inputId) {
-		const $input = $("#" + inputId);
-
-		const $element = $(element);
-		const $showIcon = $element.find("#show-password");
-		const $hideIcon = $element.find("#hide-password");
-
-		if ($input.attr("type") === "password") {
-			$input.attr("type", "text");
-			$showIcon.css("display", "none");
-			$hideIcon.css("display", "inline-flex");
-		} else {
-			$input.attr("type", "password");
-			$showIcon.css("display", "inline-flex");
-			$hideIcon.css("display", "none");
-		}
-	}
 });
+
+function resendTogglePassword(element, inputId) {
+	const input = document.getElementById(inputId);
+
+	const showIcon = element.querySelector("#show-password");
+	const hideIcon = element.querySelector("#hide-password");
+
+	if (input.type === "password") {
+		input.type = "text";
+		showIcon.style.display = "none";
+		hideIcon.style.display = "inline-flex";
+	} else {
+		input.type = "password";
+		showIcon.style.display = "inline-flex";
+		hideIcon.style.display = "none";
+	}
+}
