@@ -27,9 +27,9 @@
 							</div>
 							<p class="resend-setup-steps-desc">Create an API key with <strong>"Sending access"</strong> permissions to use it in the next step.</p>
 							<div class="resend-setup-steps-actions" style="display: flex; align-items: center; gap: 16px;">
-								<a class="resend-button is-primary" href="http://resend.com/api-keys" onclick="resendCreateKey()" target="_blank" rel="noopener noreferrer"><?php esc_html_e( 'Create API key', 'resend' ); ?></a>
+								<a id="resend-create-key" class="resend-button is-primary" href="http://resend.com/api-keys" onclick="resendCreateKey()" target="_blank" rel="noopener noreferrer"><?php esc_html_e( 'Create API key', 'resend' ); ?></a>
 								<span>OR</span>
-								<a href="javascript:void(0);" onclick="resendUseExistingKey()"><?php esc_html_e( 'Use existing API key', 'resend' ); ?></a>
+								<a id="resend-use-existing-key" href="#"><?php esc_html_e( 'Use existing API key', 'resend' ); ?></a>
 							</div>
 						</div>
 					</div>
