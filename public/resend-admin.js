@@ -46,9 +46,11 @@ jQuery(function ($) {
 				action: "resend_settings",
 				_wpnonce: resendAjax.nonce,
 				from_name: $form.find("#from_name").val(),
-				from_email: $form.find("#form_email").val(),
+				from_email: $form.find("#from_email").val(),
 			},
-			function (response) {}
+			function (response) {
+				displayAlert(response.data?.message, response.success);
+			}
 		).always(function () {
 			resetButton($button);
 		});

@@ -64,7 +64,6 @@ function wp_mail( $to, $subject, $message, $headers = '', $attachments = array()
 						}
 						break;
 					case 'reply-to':
-						error_log( $content );
 						break;
 					default:
 						// Add it to our grand headers array.

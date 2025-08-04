@@ -30,8 +30,8 @@ $notice_is_success = isset( $notice ) && isset( $notice['success'] ) ? $notice['
 								<input id="from_name" name="from_name" type="text" class="resend-input" value="<?php echo esc_attr( Resend::get_from_name() ); ?>" autocomplete="name" required>
 							</div>
 							<div>
-								<label for="form_email" class="resend-label"><?php esc_html_e( 'Sender email address', 'resend' ); ?></label>
-								<input id="form_email" name="from_email" type="email" class="resend-input" value="<?php echo esc_attr( Resend::get_from_address() ); ?>" autocomplete="email" required>
+								<label for="from_email" class="resend-label"><?php esc_html_e( 'Sender email address', 'resend' ); ?></label>
+								<input id="from_email" name="from_email" type="email" class="resend-input" value="<?php echo esc_attr( Resend::get_from_address() ); ?>" autocomplete="email" required>
 							</div>
 						</div>
 						<div>

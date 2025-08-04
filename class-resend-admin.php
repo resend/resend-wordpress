@@ -316,7 +316,39 @@ class Resend_Admin {
 			: wp_send_json_error( self::json_status( $status ) );
 	}
 
-	public static function ajax_settings() {}
+	public static function ajax_settings() {
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_send_json_error( self::json_status( 'not-allowed' ) );
+		}
+
+		check_admin_referer( self::NONCE );
+
+		$new_from_email = sanitize_email( isset( $_POST['from_email'] ) ? wp_unslash( $_POST['from_email'] ) : '' );
+		$old_from_email = Resend::get_from_address();
+
+		if ( ! $new_from_email || ! is_email( $new_from_email ) ) {
+			wp_send_json_error( self::json_status( 'from-email-invalid' ) );
+		}
+
+		$new_from_name = sanitize_text_field( isset( $_POST['from_name'] ) ? wp_unslash( $_POST['from_name'] ) : '' );
+		$old_from_name = Resend::get_from_name();
+
+		if ( ! $new_from_name ) {
+			wp_send_json_error( self::json_status( 'from-name-invalid' ) );
+		}
+
+		// Update the from email address
+		if ( $new_from_email !== $old_from_email ) {
+			update_option( 'resend_from_address', $new_from_email );
+		}
+
+		// Update the from name
+		if ( $new_from_name !== $old_from_name ) {
+			update_option( 'resend_from_name', $new_from_name );
+		}
+
+		wp_send_json_success( self::json_status( 'settings-updated' ) );
+	}
 
 	public static function ajax_send_test_email() {
 		if ( ! current_user_can( 'manage_options' ) ) {
