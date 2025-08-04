@@ -6,7 +6,10 @@ class Resend_Admin {
 
 	private static $initiated = false;
 
-	private static $status = array();
+	private static $status  = array();
+	private static $allowed = array(
+		'strong' => array(),
+	);
 
 	public static function init() {
 		if ( ! self::$initiated ) {
@@ -24,6 +27,7 @@ class Resend_Admin {
 
 		// AJAX handlers
 		add_action( 'wp_ajax_resend_enter_key', array( 'Resend_Admin', 'ajax_enter_api_key' ) );
+		add_action( 'wp_ajax_resend_settings', array( 'Resend_Admin', 'ajax_settings' ) );
 		add_action( 'wp_ajax_resend_send_test', array( 'Resend_Admin', 'ajax_send_test_email' ) );
 
 		// Plugin links
@@ -125,8 +129,12 @@ class Resend_Admin {
 	}
 
 	public static function display_configuration_page() {
-		$status = $_GET['status'];
-		$args   = array();
+		$status = '';
+		if ( isset( $_GET['status'] ) ) {
+			$status = $_GET['status'];
+		}
+
+		$args = array();
 
 		if ( 'connected' === $status ) {
 			$args = array(
@@ -181,7 +189,7 @@ class Resend_Admin {
 				$message = $message['message'] ?? $message['error'];
 			}
 
-			$message = wp_kses( $message, array() );
+			$message = wp_kses( esc_html( $message ), self::$allowed );
 
 			return $message;
 		}
@@ -307,6 +315,8 @@ class Resend_Admin {
 			? wp_send_json_success( self::json_status( $status ) )
 			: wp_send_json_error( self::json_status( $status ) );
 	}
+
+	public static function ajax_settings() {}
 
 	public static function ajax_send_test_email() {
 		if ( ! current_user_can( 'manage_options' ) ) {
