@@ -224,6 +224,15 @@ class Resend_Admin {
 			case 'test-email-failed':
 				$message = __( 'Failed to send a test email.', 'resend' );
 				break;
+			case 'from-email-invalid':
+				$message = __( 'Failed to update sender email address', 'resend' );
+				break;
+			case 'from-name-invalid':
+				$message = __( 'Failed to update sender name', 'resend' );
+				break;
+			case 'settings-updated':
+				$message = __( 'Settings updated successfully', 'resend' );
+				break;
 			default:
 				$message = $type;
 		}
