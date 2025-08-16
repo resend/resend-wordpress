@@ -35,6 +35,27 @@ jQuery(function ($) {
 		$resendAlerts.html($alert);
 	}
 
+	$("#resend-settings-form").on("submit", function (e) {
+		e.preventDefault();
+		const $form = $(this);
+		const $button = $form.find('[type="submit"]');
+		setButtonLoading($button, "Saving...");
+		$.post(
+			resendAjax.ajax_url,
+			{
+				action: "resend_settings",
+				_wpnonce: resendAjax.nonce,
+				from_name: $form.find("#from_name").val(),
+				from_email: $form.find("#from_email").val(),
+			},
+			function (response) {
+				displayAlert(response.data?.message, response.success);
+			}
+		).always(function () {
+			resetButton($button);
+		});
+	});
+
 	$("#resend-api-key-form").on("submit", function (e) {
 		e.preventDefault();
 		const $form = $(this);
@@ -77,6 +98,13 @@ jQuery(function ($) {
 		).always(function () {
 			resetButton($button);
 		});
+	});
+
+	// Accordion
+
+	$(".resend-accordion-toggle").click(function () {
+		$(this).next().slideToggle(250);
+		$(this).find(".resend-accordion-icon").toggleClass("open");
 	});
 
 	// Onboarding

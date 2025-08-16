@@ -34,6 +34,26 @@ class Resend {
 		return apply_filters( 'resend_get_api_key', get_option( 'resend_api_key' ) );
 	}
 
+	public static function get_from_name() {
+		return get_option( 'resend_from_name', 'WordPress' );
+	}
+
+	public static function get_from_address() {
+		$sitename = wp_parse_url( network_home_url(), PHP_URL_HOST );
+
+		$default_from_email = '';
+
+		if ( null !== $sitename ) {
+			$default_from_email .= 'wordpress@';
+			if ( str_starts_with( $sitename, 'www.' ) ) {
+				$sitename = substr( $sitename, 4 );
+			}
+			$default_from_email .= $sitename;
+		}
+
+		return get_option( 'resend_from_address', $default_from_email );
+	}
+
 	public static function is_valid_key( $key ) {
 		if ( strpos( $key, 're_' ) !== 0 ) {
 			return false;
