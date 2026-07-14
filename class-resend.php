@@ -21,7 +21,10 @@ class Resend {
 	}
 
 	public static function plugin_activation() {
-		if ( ! empty( $_SERVER['SCRIPT_NAME'] ) && strpos( $_SERVER['SCRIPT_NAME'], '/wp-admin/plugins.php' ) !== false ) {
+		$script_name = isset( $_SERVER['SCRIPT_NAME'] ) ? wp_unslash( $_SERVER['SCRIPT_NAME'] ) : '';
+		$script_name = sanitize_text_field( $script_name );
+
+		if ( ! empty( $script_name ) && strpos( $script_name, '/wp-admin/plugins.php' ) !== false ) {
 			add_option( 'Activated_Resend', true );
 		}
 	}

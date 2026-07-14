@@ -71,9 +71,9 @@ class Resend_Admin {
 						'index.php',
 						'settings_page_resend',
 					)
+					)
 				)
-			)
-		) ) {
+			) ) {
 			$resend_css_path = 'public/resend.css';
 			wp_register_style( 'resend', plugin_dir_url( __FILE__ ) . $resend_css_path, array(), self::get_asset_file_version( $resend_css_path ) );
 			wp_enqueue_style( 'resend' );
@@ -102,9 +102,11 @@ class Resend_Admin {
 	}
 
 	public static function display_page() {
-		if ( ! Resend::get_api_key() || ( isset( $_GET['view'] ) && 'start' === $_GET['view'] ) ) {
+		$view = isset( $_GET['view'] ) ? sanitize_text_field( wp_unslash( $_GET['view'] ) ) : '';
+
+		if ( ! Resend::get_api_key() || 'start' === $view ) {
 			self::display_start_page();
-		} elseif ( isset( $_GET['view'] ) && 'stats' === $_GET['view'] ) {
+		} elseif ( 'stats' === $view ) {
 			self::display_stats_page();
 		} else {
 			self::display_configuration_page();
@@ -129,10 +131,7 @@ class Resend_Admin {
 	}
 
 	public static function display_configuration_page() {
-		$status = '';
-		if ( isset( $_GET['status'] ) ) {
-			$status = $_GET['status'];
-		}
+		$status = isset( $_GET['status'] ) ? sanitize_text_field( wp_unslash( $_GET['status'] ) ) : '';
 
 		$args = array();
 
@@ -245,9 +244,10 @@ class Resend_Admin {
 	 */
 	public static function admin_help() {
 		$current_screen = get_current_screen();
+		$view = isset( $_GET['view'] ) ? sanitize_text_field( wp_unslash( $_GET['view'] ) ) : '';
 
 		if ( current_user_can( 'manage_options' ) ) {
-			if ( ! Resend::get_api_key() || ( isset( $_GET['view'] ) && 'start' === $_GET['view'] ) ) {
+			if ( ! Resend::get_api_key() || 'start' === $view ) {
 				// Setup page
 				$current_screen->add_help_tab(
 					array(
@@ -270,7 +270,7 @@ class Resend_Admin {
 
 					)
 				);
-			} elseif ( isset( $_GET['view'] ) && 'stats' === $_GET['view'] ) {
+			} elseif ( 'stats' === $view ) {
 			} else {
 				// Configuration page
 				$current_screen->add_help_tab(
