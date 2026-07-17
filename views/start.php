@@ -1,3 +1,11 @@
+<?php
+/**
+ * The `start` view.
+ *
+ * @package Resend
+ */
+
+?>
 <div class="resend-plugin-container">
 	<div class="resend-start-container">
 		<?php Resend::view( 'logo' ); ?>

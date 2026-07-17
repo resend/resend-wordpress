@@ -1,4 +1,10 @@
 <?php
+/**
+ * The component for displaying the logo.
+ *
+ * @package Resend
+ */
+
 if ( ! isset( $dashboard ) ) {
 	$dashboard = false;
 }
@@ -10,7 +16,7 @@ if ( ! isset( $dashboard ) ) {
 	<?php if ( $dashboard ) : ?>
 		<a href="http://resend.com/emails" target="_blank" rel="noopener noreferrer" class="resend-button">
 			<span>Resend Dashboard</span>
-			<?php Resend::view( 'icon', array( 'type' => 'arrow-top-right-on-square' ) ); ?>
+			<?php Resend::view( 'icon', array( 'icon' => 'arrow-top-right-on-square' ) ); ?>
 		</a>
 	<?php endif; ?>
 </div>
