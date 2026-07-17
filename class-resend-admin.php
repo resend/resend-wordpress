@@ -164,6 +164,8 @@ class Resend_Admin {
 	 * @return void
 	 */
 	public static function display_page() {
+		// Read-only routing parameter; no data is processed or persisted, so no nonce is required.
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
 		$view = isset( $_GET['view'] ) ? sanitize_text_field( wp_unslash( $_GET['view'] ) ) : '';
 
 		if ( ! Resend::get_api_key() || 'start' === $view ) {
@@ -208,6 +210,8 @@ class Resend_Admin {
 	 * @return void
 	 */
 	public static function display_configuration_page() {
+		// Read-only routing parameter; no data is processed or persisted, so no nonce is required.
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
 		$status = isset( $_GET['status'] ) ? sanitize_text_field( wp_unslash( $_GET['status'] ) ) : '';
 
 		$args = array();
@@ -342,7 +346,10 @@ class Resend_Admin {
 	 */
 	public static function admin_help() {
 		$current_screen = get_current_screen();
-		$view           = isset( $_GET['view'] ) ? sanitize_text_field( wp_unslash( $_GET['view'] ) ) : '';
+
+		// Read-only routing parameter; no data is processed or persisted, so no nonce is required.
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		$view = isset( $_GET['view'] ) ? sanitize_text_field( wp_unslash( $_GET['view'] ) ) : '';
 
 		if ( current_user_can( 'manage_options' ) ) {
 			if ( ! Resend::get_api_key() || 'start' === $view ) {
