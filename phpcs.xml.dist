@@ -8,7 +8,7 @@
 		<include-pattern>*\.php$</include-pattern>
 	</rule>
 
-	<rule ref="WordPress-Core" />
+	<rule ref="WordPress" />
 
 	<arg name="colors" />
 	<arg value="ps"/>

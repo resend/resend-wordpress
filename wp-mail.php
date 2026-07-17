@@ -1,13 +1,18 @@
 <?php
+/**
+ * WordPress Mail class
+ *
+ * @package Resend
+ */
 
 /**
  * WP Mail
  *
- * @param string|string[] $to
- * @param string $subject
- * @param string $message
- * @param string|string[] $headers
- * @param string|string[] $attachments
+ * @param string|string[] $to          Array or comma-separated list of email addresses to send message.
+ * @param string          $subject     Email subject.
+ * @param string          $message     Message contents.
+ * @param string|string[] $headers     Optional. Additional headers.
+ * @param string|string[] $attachments Optional. Paths to files to attach.
  * @return bool
  */
 function wp_mail( $to, $subject, $message, $headers = '', $attachments = array() ) {

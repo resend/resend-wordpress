@@ -1,9 +1,9 @@
 <?php
-
 /**
+ * Resend
+ *
  * @package Resend
- */
-/**
+ *
  * @wordpress-plugin
  * Plugin Name: Resend
  * Plugin URI: https://resend.com
@@ -17,7 +17,7 @@
  * Text Domain: resend
  */
 
-// Make sure we don't expose any info if called directly
+// Make sure we don't expose any info if called directly.
 if ( ! function_exists( 'add_action' ) ) {
 	echo 'Hi there! I\'m just a plugin, not much I can do when called directly.';
 	exit;
@@ -27,6 +27,9 @@ define( 'RESEND_VERSION', '1.0.0' );
 define( 'RESEND__PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 
 if ( function_exists( 'wp_mail' ) ) {
+	/**
+	 * Show a notice that wp_mail is already declared by another plugin.
+	 */
 	function wp_mail_already_declared_notice() {
 		$class   = 'notice notice-error';
 		$message = __( 'Resend is active, but something else is blocking it from sending emails. Another plugin or custom code is taking over email handling (wp_mail). To use Resend, you\'ll need to disable the conflict.', 'resend' );
