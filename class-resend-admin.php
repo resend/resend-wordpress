@@ -1,50 +1,94 @@
 <?php
+/**
+ * The Resend Admin Class
+ *
+ * @package Resend
+ */
 
+/**
+ * Class for creating the Admin UI and options.
+ */
 class Resend_Admin {
 
 	public const NONCE = 'resend-nonce';
 
+	/**
+	 * Determine if the admin hooks have been initiated.
+	 *
+	 * @var bool
+	 */
 	private static $initiated = false;
 
-	private static $status  = array();
+	/**
+	 * The list of status messages.
+	 *
+	 * @var array
+	 */
+	private static $status = array();
+
+	/**
+	 * The list of allowed HTML.
+	 *
+	 * @var array
+	 */
 	private static $allowed = array(
 		'strong' => array(),
 	);
 
+	/**
+	 * Initialize the admin class.
+	 *
+	 * @return void
+	 */
 	public static function init() {
 		if ( ! self::$initiated ) {
 			self::init_hooks();
 		}
 	}
 
+	/**
+	 * Register admin hooks and AJAX callbacks.
+	 *
+	 * @return void
+	 */
 	public static function init_hooks() {
 		self::$initiated = true;
 
-		// Admin
+		// Admin.
 		add_action( 'admin_init', array( 'Resend_Admin', 'admin_init' ) );
 		add_action( 'admin_menu', array( 'Resend_Admin', 'admin_menu' ), 5 );
 		add_action( 'admin_enqueue_scripts', array( 'Resend_Admin', 'load_resources' ) );
 
-		// AJAX handlers
+		// AJAX handlers.
 		add_action( 'wp_ajax_resend_enter_key', array( 'Resend_Admin', 'ajax_enter_api_key' ) );
 		add_action( 'wp_ajax_resend_settings', array( 'Resend_Admin', 'ajax_settings' ) );
 		add_action( 'wp_ajax_resend_send_test', array( 'Resend_Admin', 'ajax_send_test_email' ) );
 
-		// Plugin links
+		// Plugin links.
 		add_filter( 'plugin_action_links', array( 'Resend_Admin', 'plugin_action_links' ), 10, 2 );
 		add_filter( 'plugin_action_links_' . plugin_basename( plugin_dir_path( __FILE__ ) . '/resend.php' ), array( 'Resend_Admin', 'admin_plugin_settings_link' ) );
 	}
 
+	/**
+	 * Handle admin initialization tasks after plugin activation.
+	 *
+	 * @return void
+	 */
 	public static function admin_init() {
 		if ( get_option( 'Activated_Resend' ) ) {
 			delete_option( 'Activated_Resend' );
 			if ( ! headers_sent() ) {
 				$admin_url = self::get_page_url( 'init' );
-				wp_redirect( $admin_url );
+				wp_safe_redirect( $admin_url );
 			}
 		}
 	}
 
+	/**
+	 * Register the Resend admin menu page.
+	 *
+	 * @return void
+	 */
 	public static function admin_menu() {
 		$hook = add_options_page( __( 'Resend', 'resend' ), __( 'Resend', 'resend' ), 'manage_options', 'resend', array( 'Resend_Admin', 'display_page' ) );
 
@@ -53,12 +97,24 @@ class Resend_Admin {
 		}
 	}
 
+	/**
+	 * Add a settings link to the plugin action links.
+	 *
+	 * @param array $links Existing plugin action links.
+	 *
+	 * @return array Modified plugin action links.
+	 */
 	public static function admin_plugin_settings_link( $links ) {
 		$settings_link = '<a href="' . esc_url( self::get_page_url() ) . '">' . __( 'Settings', 'resend' ) . '</a>';
 		array_unshift( $links, $settings_link );
 		return $links;
 	}
 
+	/**
+	 * Load admin styles and scripts on Resend admin pages.
+	 *
+	 * @return void
+	 */
 	public static function load_resources() {
 		global $hook_suffix;
 
@@ -72,7 +128,8 @@ class Resend_Admin {
 						'settings_page_resend',
 					)
 				)
-			)
+			),
+			true
 		) ) {
 			$resend_css_path = 'public/resend.css';
 			wp_register_style( 'resend', plugin_dir_url( __FILE__ ) . $resend_css_path, array(), self::get_asset_file_version( $resend_css_path ) );
@@ -101,16 +158,30 @@ class Resend_Admin {
 		}
 	}
 
+	/**
+	 * Render the correct admin page based on the current view.
+	 *
+	 * @return void
+	 */
 	public static function display_page() {
-		if ( ! Resend::get_api_key() || ( isset( $_GET['view'] ) && 'start' === $_GET['view'] ) ) {
+		// Read-only routing parameter; no data is processed or persisted, so no nonce is required.
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		$view = isset( $_GET['view'] ) ? sanitize_text_field( wp_unslash( $_GET['view'] ) ) : '';
+
+		if ( ! Resend::get_api_key() || 'start' === $view ) {
 			self::display_start_page();
-		} elseif ( isset( $_GET['view'] ) && 'stats' === $_GET['view'] ) {
+		} elseif ( 'stats' === $view ) {
 			self::display_stats_page();
 		} else {
 			self::display_configuration_page();
 		}
 	}
 
+	/**
+	 * Display the setup start page when no API key is configured.
+	 *
+	 * @return void
+	 */
 	public static function display_start_page() {
 		$api_key = Resend::get_api_key();
 
@@ -122,17 +193,26 @@ class Resend_Admin {
 		Resend::view( 'start' );
 	}
 
+	/**
+	 * Display the stats page and clear the stored API key.
+	 *
+	 * @return void
+	 */
 	public static function display_stats_page() {
 		delete_option( 'resend_api_key' );
 
 		Resend::view( 'stats' );
 	}
 
+	/**
+	 * Display the Resend configuration page.
+	 *
+	 * @return void
+	 */
 	public static function display_configuration_page() {
-		$status = '';
-		if ( isset( $_GET['status'] ) ) {
-			$status = $_GET['status'];
-		}
+		// Read-only routing parameter; no data is processed or persisted, so no nonce is required.
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		$status = isset( $_GET['status'] ) ? sanitize_text_field( wp_unslash( $_GET['status'] ) ) : '';
 
 		$args = array();
 
@@ -151,8 +231,8 @@ class Resend_Admin {
 	/**
 	 * Add a notice with the given type and message.
 	 *
-	 * @param string $type
-	 * @param null|string $message
+	 * @param string      $type The type of message.
+	 * @param null|string $message The message content.
 	 * @return void
 	 */
 	public static function add_status( $type, $message ) {
@@ -164,6 +244,14 @@ class Resend_Admin {
 
 	/**
 	 * Get the JSON status payload for the given type.
+	 */
+	/**
+	 * Get the JSON status payload for the given type.
+	 *
+	 * @param string      $type    Status type key.
+	 * @param string|null $message Optional override message.
+	 *
+	 * @return array JSON-compatible status.
 	 */
 	public static function json_status( $type, $message = null ) {
 		if ( ! empty( self::$status ) ) {
@@ -182,6 +270,14 @@ class Resend_Admin {
 	 * Get the status message based on the given type or use the provided message.
 	 *
 	 * @return string
+	 */
+	/**
+	 * Get the human-readable status message for a notice.
+	 *
+	 * @param string      $type    Status type key.
+	 * @param string|null $message Optional override message.
+	 *
+	 * @return string Sanitized status message.
 	 */
 	protected static function get_status_message( $type, $message = null ) {
 		if ( $message ) {
@@ -243,12 +339,21 @@ class Resend_Admin {
 	/**
 	 * Add help to the Resend page.
 	 */
+	/**
+	 * Register help tabs and sidebar content for the Resend admin page.
+	 *
+	 * @return void
+	 */
 	public static function admin_help() {
 		$current_screen = get_current_screen();
 
+		// Read-only routing parameter; no data is processed or persisted, so no nonce is required.
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		$view = isset( $_GET['view'] ) ? sanitize_text_field( wp_unslash( $_GET['view'] ) ) : '';
+
 		if ( current_user_can( 'manage_options' ) ) {
-			if ( ! Resend::get_api_key() || ( isset( $_GET['view'] ) && 'start' === $_GET['view'] ) ) {
-				// Setup page
+			if ( ! Resend::get_api_key() || 'start' === $view ) {
+				// Setup page.
 				$current_screen->add_help_tab(
 					array(
 						'id'      => 'overview',
@@ -270,9 +375,8 @@ class Resend_Admin {
 
 					)
 				);
-			} elseif ( isset( $_GET['view'] ) && 'stats' === $_GET['view'] ) {
 			} else {
-				// Configuration page
+				// Configuration page.
 				$current_screen->add_help_tab(
 					array(
 						'id'      => 'overview',
@@ -292,6 +396,11 @@ class Resend_Admin {
 		);
 	}
 
+	/**
+	 * Handle AJAX requests for entering or updating the API key.
+	 *
+	 * @return void
+	 */
 	public static function ajax_enter_api_key() {
 		if ( ! current_user_can( 'manage_options' ) ) {
 			wp_send_json_error( self::json_status( 'not-allowed' ) );
@@ -325,6 +434,11 @@ class Resend_Admin {
 			: wp_send_json_error( self::json_status( $status ) );
 	}
 
+	/**
+	 * Handle AJAX requests for updating Resend settings.
+	 *
+	 * @return void
+	 */
 	public static function ajax_settings() {
 		if ( ! current_user_can( 'manage_options' ) ) {
 			wp_send_json_error( self::json_status( 'not-allowed' ) );
@@ -346,12 +460,12 @@ class Resend_Admin {
 			wp_send_json_error( self::json_status( 'from-name-invalid' ) );
 		}
 
-		// Update the from email address
+		// Update the from email address.
 		if ( $new_from_email !== $old_from_email ) {
 			update_option( 'resend_from_address', $new_from_email );
 		}
 
-		// Update the from name
+		// Update the from name.
 		if ( $new_from_name !== $old_from_name ) {
 			update_option( 'resend_from_name', $new_from_name );
 		}
@@ -359,6 +473,11 @@ class Resend_Admin {
 		wp_send_json_success( self::json_status( 'settings-updated' ) );
 	}
 
+	/**
+	 * Handle AJAX requests to send a test email.
+	 *
+	 * @return void
+	 */
 	public static function ajax_send_test_email() {
 		if ( ! current_user_can( 'manage_options' ) ) {
 			wp_send_json_error( self::json_status( 'not-allowed' ) );
@@ -380,6 +499,14 @@ class Resend_Admin {
 			: wp_send_json_error( self::json_status( 'test-email-failed' ) );
 	}
 
+	/**
+	 * Append a settings link to the plugin action links.
+	 *
+	 * @param array  $links Plugin action links.
+	 * @param string $file  Plugin file.
+	 *
+	 * @return array Modified plugin action links.
+	 */
 	public static function plugin_action_links( $links, $file ) {
 		if ( plugin_basename( plugin_dir_url( __FILE__ ) . '/resend.php' ) === $file ) {
 			$links[] = '<a href="' . esc_url( self::get_page_url() ) . '">' . esc_html__( 'Settings', 'resend' ) . '</a>';
@@ -388,6 +515,13 @@ class Resend_Admin {
 		return $links;
 	}
 
+	/**
+	 * Get the admin page URL for Resend pages.
+	 *
+	 * @param string $page Optional page view (config|stats|init).
+	 *
+	 * @return string Admin URL.
+	 */
 	public static function get_page_url( $page = 'config' ) {
 		$base_url = admin_url( 'options-general.php' );
 		$args     = array( 'page' => 'resend' );
@@ -407,6 +541,13 @@ class Resend_Admin {
 		return add_query_arg( $args, $base_url );
 	}
 
+	/**
+	 * Get the asset file version for cache busting.
+	 *
+	 * @param string $relative_path Relative path to the asset.
+	 *
+	 * @return string Asset version string.
+	 */
 	public static function get_asset_file_version( $relative_path ) {
 		$full_path = RESEND__PLUGIN_DIR . $relative_path;
 

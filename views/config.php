@@ -1,6 +1,12 @@
 <?php
-$current_user       = wp_get_current_user();
-$current_user_email = $current_user->user_email;
+/**
+ * The `config` view.
+ *
+ * @package Resend
+ */
+
+$current_wp_user    = wp_get_current_user();
+$current_user_email = $current_wp_user->user_email;
 
 $notice_message    = isset( $notice ) && isset( $notice['message'] ) ? $notice['message'] : null;
 $notice_is_success = isset( $notice ) && isset( $notice['success'] ) ? $notice['success'] : false;
@@ -81,10 +87,10 @@ $notice_is_success = isset( $notice ) && isset( $notice['success'] ) ? $notice['
 								<input id="resend_api_key" name="key" type="password" class="resend-input" value="<?php echo esc_attr( get_option( 'resend_api_key' ) ); ?>" autocomplete="off" data-1p-ignore data-lpignore="true" data-protonpass-ignore="true">
 								<button type="button" class="resend-button" onclick="resendTogglePassword(this, 'resend_api_key')" style="padding-left: 7px; padding-right: 7px;">
 									<span id="show-password" style="display: inline-flex;">
-										<?php Resend::view( 'icon', array( 'type' => 'eye' ) ); ?>
+										<?php Resend::view( 'icon', array( 'icon' => 'eye' ) ); ?>
 									</span>
 									<span id="hide-password" style="display: none;">
-										<?php Resend::view( 'icon', array( 'type' => 'eye-slash' ) ); ?>
+										<?php Resend::view( 'icon', array( 'icon' => 'eye-slash' ) ); ?>
 									</span>
 								</button>
 							</div>

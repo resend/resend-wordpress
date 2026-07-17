@@ -2,7 +2,7 @@
 Contributors: resend, jayanratna
 Donate link: https://resend.com
 Tags: email, transactional email, smtp, mail, mailing, resend
-Tested up to: 6.8
+Tested up to: 7.0
 Requires at least: 5.8
 Requires PHP: 7.2
 Stable tag: 1.0.0
