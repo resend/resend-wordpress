@@ -1,9 +1,9 @@
 === Resend ===
-Contributors: resend, jayanratna
-Donate link: https://resend.com
-Tags: email, transactional email, smtp, mail, mailing, resend
+
+Contributors: resend
+Tags: email, transactional email, smtp, mail, resend
 Tested up to: 7.0
-Requires at least: 5.8
+Requires at least: 5.9
 Requires PHP: 7.2
 Stable tag: 1.0.0
 License: GPL-2.0-or-later

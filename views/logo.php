@@ -5,6 +5,10 @@
  * @package Resend
  */
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit; // Exit if accessed directly
+}
+
 if ( ! isset( $dashboard ) ) {
 	$dashboard = false;
 }

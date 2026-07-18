@@ -5,6 +5,10 @@
  * @package Resend
  */
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit; // Exit if accessed directly
+}
+
 ?>
 <div class="resend-plugin-container">
 	<div class="resend-start-container">

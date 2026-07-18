@@ -5,6 +5,10 @@
  * @package Resend
  */
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit; // Exit if accessed directly
+}
+
 $current_wp_user    = wp_get_current_user();
 $current_user_email = $current_wp_user->user_email;
 

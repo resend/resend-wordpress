@@ -8,7 +8,7 @@
  * Plugin Name: Resend
  * Plugin URI: https://resend.com
  * Description: The best API to reach humans instead of spam folders. Build, test, and deliver transactional emails at scale.
- * Requires at least: 5.8
+ * Requires at least: 5.9
  * Version: 1.0.0
  * Requires PHP: 7.2
  * Author: Resend
@@ -16,6 +16,10 @@
  * License: GPL-2.0-or-later
  * Text Domain: resend
  */
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit; // Exit if accessed directly
+}
 
 // Make sure we don't expose any info if called directly.
 if ( ! function_exists( 'add_action' ) ) {
