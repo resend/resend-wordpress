@@ -1,11 +1,15 @@
-.git
-.github
+# Directories
+/.git/
+/.github/
+/.vscode/
+/vendor/
 
-*.DS_Store
-.DS_Store
-.distignore
-.editorconfig
-.gitattributes
-.gitignore
-phpcs.xml
-phpcs.xml.dist
+# Files
+.*
+/CODE_OF_CONDUCT.md
+/composer.json
+/composer.lock
+/CONTRIBUTING.md
+/README.md
+/renovate.json
+/phpcs*
