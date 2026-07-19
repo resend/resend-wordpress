@@ -12,7 +12,7 @@
  * Version: 1.0.0
  * Requires PHP: 7.2
  * Author: Resend
- * Author URI: https://resend.com
+ * Author URI: https://github.com/resend/resend-wordpress/graphs/contributors
  * License: GPL-2.0-or-later
  * Text Domain: resend
  */
