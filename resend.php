@@ -7,7 +7,7 @@
  * @wordpress-plugin
  * Plugin Name: Resend
  * Plugin URI: https://resend.com
- * Description: The best API to reach humans instead of spam folders. Build, test, and deliver transactional emails at scale.
+ * Description: Send WordPress emails through the Resend API. Connect your Resend account, configure your sender, and route transactional emails through Resend's infrastructure.
  * Requires at least: 5.9
  * Version: 1.0.0
  * Requires PHP: 7.2
