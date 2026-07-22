@@ -135,10 +135,6 @@ class Resend_Admin {
 			wp_register_style( 'resend', plugin_dir_url( __FILE__ ) . $resend_css_path, array(), self::get_asset_file_version( $resend_css_path ) );
 			wp_enqueue_style( 'resend' );
 
-			$resend_font_inter_css_path = 'public/fonts/inter.css';
-			wp_register_style( 'resend-font-inter', plugin_dir_url( __FILE__ ) . $resend_font_inter_css_path, array(), self::get_asset_file_version( $resend_font_inter_css_path ) );
-			wp_enqueue_style( 'resend-font-inter' );
-
 			$resend_admin_css_path = 'public/resend-admin.css';
 			wp_register_style( 'resend-admin', plugin_dir_url( __FILE__ ) . $resend_admin_css_path, array(), self::get_asset_file_version( $resend_admin_css_path ) );
 			wp_enqueue_style( 'resend-admin' );
@@ -359,7 +355,7 @@ class Resend_Admin {
 						'id'      => 'overview',
 						'title'   => __( 'Overview', 'resend' ),
 						'content' =>
-							'<p>' . esc_html__( 'Resend is the best way to reach humans instead of spam folders. Deliver transactional and marketing emails at scale.', 'resend' ) . '</p>' .
+							'<p>' . esc_html__( 'The Resend WordPress plugin lets you send transactional and marketing emails from WordPress through the Resend API.', 'resend' ) . '</p>' .
 							'<p>' . esc_html__( 'On this page, you are able to connect Resend to your site.', 'resend' ) . '</p>',
 					)
 				);
@@ -382,7 +378,7 @@ class Resend_Admin {
 						'id'      => 'overview',
 						'title'   => __( 'Overview', 'resend' ),
 						'content' =>
-							'<p>' . esc_html__( 'Resend is the best way to reach humans instead of spam folders. Deliver transactional and marketing emails at scale.', 'resend' ) . '</p>' .
+							'<p>' . esc_html__( 'The Resend WordPress plugin lets you send transactional and marketing emails from WordPress through the Resend API.', 'resend' ) . '</p>' .
 							'<p>' . esc_html__( 'On this page, you are able to update your Resend settings and view your email history.', 'resend' ) . '</p>',
 					)
 				);

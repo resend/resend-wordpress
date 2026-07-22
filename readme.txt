@@ -9,24 +9,23 @@ Stable tag: 1.0.0
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-The best API to reach humans instead of spam folders. Build, test, and deliver transactional emails at scale with Resend.
+Send WordPress emails through the Resend API. Build, test, and deliver transactional emails at scale.
 
 == Description ==
 
-Resend for WordPress is the easiest way to deliver transactional and marketing emails at scale. Say goodbye to spam folders and delivery issues.
+Resend for WordPress routes your site's transactional and marketing emails through the Resend API, replacing the default WordPress mail delivery method.
 
 **Key Features:**
 
 * **Simple Setup** - Connect your Resend account with just an API key
-* **Reliable Delivery** - Resend ensures your emails reach the inbox, not spam
+* **Email Delivery** - Routes outgoing WordPress emails through Resend's infrastructure
 * **Transactional Emails** - Perfect for password resets, notifications, confirmations, and more
 * **Easy Configuration** - Set sender name and email directly from WordPress settings
 * **Test Emails** - Send test emails to verify your setup works correctly
-* **Statistics** - View your email sending statistics
 
 **How it works:**
 
-The Resend plugin hijacks WordPress' native `wp_mail()` function and routes all emails through the Resend API. This means any email sent by WordPress (password resets, notifications, contact forms, etc.) will be sent through Resend's reliable infrastructure.
+The Resend plugin overrides WordPress' native `wp_mail()` function and routes all emails through the Resend API. This means any email sent by WordPress (password resets, notifications, contact forms, etc.) will be sent through Resend instead of your server's default mail handling.
 
 **Getting Started:**
 
@@ -140,6 +139,14 @@ For support, feature requests, or bug reports, please visit:
 * [GitHub Issues](https://github.com/resend/resend-wordpress/issues)
 * [Resend Support](https://resend.com/help)
 
+== External services ==
+
+This plugin requires a Resend account and relies on the Resend API (a third-party transactional email service) to deliver emails.
+
+This plugin replaces WordPress's `wp_mail()` function. Every email your site sends (password resets, notifications, contact form submissions, and any other message triggered through `wp_mail()`) is transmitted to the Resend API instead of being sent directly by your server. Each time an email is sent, the plugin sends the following to Resend: the recipient address(es), sender name and email address, subject, message body (HTML or plain text), and any file attachments.
+
+This service is provided by Resend: [Terms of Service](https://resend.com/legal/terms-of-service), [Privacy Policy](https://resend.com/legal/privacy-policy).
+
 == Terms of Use ==
 
-By using this plugin, you agree to Resend's [Terms of Service](https://resend.com/terms).
+By using this plugin, you agree to Resend's [Terms of Service](https://resend.com/legal/terms-of-service).
