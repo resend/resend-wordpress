@@ -1,0 +1,44 @@
+name: Deploy
+
+on:
+  release:
+    types: [published]
+  push:
+    branches:
+      - main
+
+permissions: {}
+
+jobs:
+
+  deploy:
+    name: Deploy to WordPress.org
+
+    runs-on: ubuntu-24.04
+
+    timeout-minutes: 10
+
+    permissions:
+      contents: write # Required to upload assets to the GitHub release.
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: WordPress plugin deploy
+        id: deploy
+        uses: 10up/action-wordpress-plugin-deploy@54bd289b8525fd23a5c365ec369185f2966529c2 # 2.3.0
+        with:
+          generate-zip: true
+        env:
+          SLUG: resend
+          SVN_USERNAME: ${{ secrets.SVN_USERNAME }}
+          SVN_PASSWORD: ${{ secrets.SVN_PASSWORD }}
+
+      - name: Upload release assets
+        uses: softprops/action-gh-release@3d0d9888cb7fd7b750713d6e236d1fcb99157228 # v3.0.2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          files: ${{ steps.deploy.outputs.zip-path }}
+          fail_on_unmatched_files: true
