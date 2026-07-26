@@ -7,7 +7,6 @@ on:
 permissions: {}
 
 jobs:
-
   deploy:
     name: Deploy to WordPress.org
 
