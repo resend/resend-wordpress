@@ -2,9 +2,9 @@
 
 The easiest way to deliver transactional and marketing emails at scale with WordPress.
 
-[![WordPress Plugin](https://img.shields.io/wordpress/plugin/v/resend?label=WordPress%20Plugin)](https://wordpress.org/plugins/resend/)
-[![License](https://img.shields.io/badge/license-GPL--2.0-blue)](LICENSE)
-[![PHP Version](https://img.shields.io/badge/PHP-%3E%3D%207.2-blue)](https://www.php.net)
+[![WordPress Plugin](https://img.shields.io/wordpress/plugin/v/resend?label=WordPress%20Plugin&style=for-the-badge&labelColor=000000)](https://wordpress.org/plugins/resend/)
+[![PHP Version](https://img.shields.io/badge/PHP-%3E%3D%207.2-blue?style=for-the-badge&labelColor=000000)](https://www.php.net)
+[![License](https://img.shields.io/badge/license-GPL--2.0-blue?color=9cf&style=for-the-badge&labelColor=000000)](LICENSE)
 
 ## Overview
 
