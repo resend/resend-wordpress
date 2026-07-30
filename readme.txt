@@ -109,6 +109,10 @@ The plugin works with WordPress multisite, but each site will need its own Resen
 
 When you deactivate the plugin, WordPress will revert to its default email sending behavior. Any emails queued in Resend will still be sent normally.
 
+= What happens to my data if I delete the plugin? =
+
+When you delete the plugin from the Plugins page, your Resend settings (API key, sender name, sender email) are removed from the database. Simply deactivating the plugin does not remove this data.
+
 = Does this support attachments? =
 
 Yes, if the Resend API supports it. The plugin uses the standard `wp_mail()` function which supports attachments.
@@ -118,6 +122,9 @@ Yes, if the Resend API supports it. The plugin uses the standard `wp_mail()` fun
 Yes! You can set a custom sender email and name in the plugin settings page.
 
 == Changelog ==
+
+= 1.1.0 =
+* Plugin data is now removed on uninstall
 
 = 1.0.0 =
 * Initial release
@@ -136,6 +143,7 @@ Yes! You can set a custom sender email and name in the plugin settings page.
 == Support ==
 
 For support, feature requests, or bug reports, please visit:
+
 * [GitHub Issues](https://github.com/resend/resend-wordpress/issues)
 * [Resend Support](https://resend.com/help)
 
