@@ -74,6 +74,9 @@ function wp_mail( $to, $subject, $message, $headers = '', $attachments = array()
 						break;
 					case 'reply-to':
 						break;
+					case 'from':
+						// Ignore any custom From header; use Resend settings instead.
+						break;
 					default:
 						// Add it to our grand headers array.
 						$headers[ trim( $name ) ] = trim( $content );
@@ -85,16 +88,8 @@ function wp_mail( $to, $subject, $message, $headers = '', $attachments = array()
 
 	$content_type = apply_filters( 'wp_mail_content_type', $content_type );
 
-	if ( ! isset( $from_name ) ) {
-		$from_name = Resend::get_from_name();
-	}
-
-	if ( ! isset( $form_email ) ) {
-		$from_email = Resend::get_from_address();
-	}
-
-	$from_name  = apply_filters( 'wp_mail_from_name', $from_name );
-	$from_email = apply_filters( 'wp_mail_from', $from_email );
+	$from_name  = Resend::get_from_name();
+	$from_email = Resend::get_from_address();
 
 	$from = $from_name . ' <' . $from_email . '>';
 
