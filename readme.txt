@@ -5,7 +5,7 @@ Tags: email, transactional email, smtp, mail, resend
 Tested up to: 7.0
 Requires at least: 5.9
 Requires PHP: 7.2
-Stable tag: 1.0.0
+Stable tag: 1.0.1
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -118,6 +118,9 @@ Yes, if the Resend API supports it. The plugin uses the standard `wp_mail()` fun
 Yes! You can set a custom sender email and name in the plugin settings page.
 
 == Changelog ==
+
+= 1.0.1 =
+* Fixed `wp_mail` function to preserve `Reply-To`, `Cc`, `Bcc` and custom headers
 
 = 1.0.0 =
 * Initial release

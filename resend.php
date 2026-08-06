@@ -9,7 +9,7 @@
  * Plugin URI: https://resend.com
  * Description: Send WordPress emails through the Resend API. Connect your Resend account, configure your sender, and route transactional emails through Resend's infrastructure.
  * Requires at least: 5.9
- * Version: 1.0.0
+ * Version: 1.0.1
  * Requires PHP: 7.2
  * Author: Resend
  * Author URI: https://github.com/resend/resend-wordpress/graphs/contributors
@@ -27,7 +27,7 @@ if ( ! function_exists( 'add_action' ) ) {
 	exit;
 }
 
-define( 'RESEND_VERSION', '1.0.0' );
+define( 'RESEND_VERSION', '1.0.1' );
 define( 'RESEND__PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 
 if ( function_exists( 'wp_mail' ) ) {
