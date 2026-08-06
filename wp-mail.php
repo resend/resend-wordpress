@@ -198,7 +198,9 @@ function wp_mail( $to, $subject, $message, $headers = '', $attachments = array()
 				)
 			)
 		);
-		Resend_Admin::add_status( 'resend-error', $error_body );
+		if ( class_exists( 'Resend_Admin' ) ) {
+			Resend_Admin::add_status( 'resend-error', $error_body );
+		}
 		return false;
 	}
 
