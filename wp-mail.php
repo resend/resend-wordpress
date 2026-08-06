@@ -10,6 +10,20 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
+ * Split an address header into the array of addresses the API expects.
+ *
+ * Callers of wp_mail() may pass several addresses in one header, comma
+ * separated, as `Cc: a@example.com, b@example.com`. Entries may be a bare
+ * address or the `Name <email>` form, both of which the API accepts as-is.
+ *
+ * @param string $content Header value.
+ * @return string[]
+ */
+function resend_address_list( $content ) {
+	return array_values( array_filter( array_map( 'trim', explode( ',', (string) $content ) ) ) );
+}
+
+/**
  * WP Mail
  *
  * @param string|string[] $to          Array or comma-separated list of email addresses to send message.
@@ -40,6 +54,9 @@ function wp_mail( $to, $subject, $message, $headers = '', $attachments = array()
 	$api_key = Resend::get_api_key();
 
 	$content_type = 'text/plain';
+	$reply_to     = array();
+	$cc           = array();
+	$bcc          = array();
 
 	if ( empty( $headers ) ) {
 		$headers = array();
@@ -73,6 +90,13 @@ function wp_mail( $to, $subject, $message, $headers = '', $attachments = array()
 						}
 						break;
 					case 'reply-to':
+						$reply_to = array_merge( $reply_to, resend_address_list( $content ) );
+						break;
+					case 'cc':
+						$cc = array_merge( $cc, resend_address_list( $content ) );
+						break;
+					case 'bcc':
+						$bcc = array_merge( $bcc, resend_address_list( $content ) );
 						break;
 					default:
 						// Add it to our grand headers array.
@@ -106,6 +130,24 @@ function wp_mail( $to, $subject, $message, $headers = '', $attachments = array()
 		'text'    => 'text/plain' === $content_type ? $message : null,
 	);
 
+	if ( ! empty( $reply_to ) ) {
+		$body['reply_to'] = $reply_to;
+	}
+
+	if ( ! empty( $cc ) ) {
+		$body['cc'] = $cc;
+	}
+
+	if ( ! empty( $bcc ) ) {
+		$body['bcc'] = $bcc;
+	}
+
+	// Anything the switch above did not recognise is a custom header the caller
+	// asked for, so pass it through rather than collecting it and dropping it.
+	if ( ! empty( $headers ) ) {
+		$body['headers'] = $headers;
+	}
+
 	foreach ( $attachments as $attachment ) {
 		if ( is_readable( $attachment ) ) {
 			$body['attachments'][] = array(
@@ -128,8 +170,37 @@ function wp_mail( $to, $subject, $message, $headers = '', $attachments = array()
 	$response = wp_remote_post( 'https://api.resend.com/emails', $args );
 
 	if ( is_wp_error( $response ) || 200 !== wp_remote_retrieve_response_code( $response ) ) {
-		do_action( 'wp_mail_failed', new WP_Error( 'wp_mail_failed' ) );
-		Resend_Admin::add_status( 'resend-error', json_decode( wp_remote_retrieve_body( $response ), true ) );
+		$error_body = json_decode( wp_remote_retrieve_body( $response ), true );
+
+		// Core passes wp_mail_failed a WP_Error carrying the reason and the mail
+		// data, and listeners log both. An empty WP_Error reduces every failure to
+		// an indistinguishable blank line: "Domain is not verified" reads very
+		// differently from a timeout.
+		if ( is_wp_error( $response ) ) {
+			$reason = $response->get_error_message();
+		} elseif ( ! empty( $error_body['message'] ) ) {
+			$reason = $error_body['message'];
+		} else {
+			$reason = 'HTTP ' . wp_remote_retrieve_response_code( $response );
+		}
+
+		do_action(
+			'wp_mail_failed',
+			new WP_Error(
+				'wp_mail_failed',
+				$reason,
+				array(
+					'to'          => $body['to'],
+					'subject'     => $subject,
+					'message'     => $message,
+					'headers'     => $headers,
+					'attachments' => $attachments,
+				)
+			)
+		);
+		if ( class_exists( 'Resend_Admin' ) ) {
+			Resend_Admin::add_status( 'resend-error', $error_body );
+		}
 		return false;
 	}
 
