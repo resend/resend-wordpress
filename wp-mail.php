@@ -121,7 +121,7 @@ function wp_mail( $to, $subject, $message, $headers = '', $attachments = array()
 			'Content-Type'  => 'application/json',
 			'Authorization' => 'Bearer ' . $api_key,
 		),
-		'user-agent' => 'resend-wordpress/' . get_bloginfo( 'version' ),
+		'user-agent' => sprintf( 'resend-wordpress/%s (WordPress/%s; PHP/%s)', RESEND_VERSION, get_bloginfo( 'version' ), phpversion() ),
 		'body'       => wp_json_encode( $body ),
 	);
 
