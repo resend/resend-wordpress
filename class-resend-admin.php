@@ -545,7 +545,7 @@ class Resend_Admin {
 	 * @return string Asset version string.
 	 */
 	public static function get_asset_file_version( $relative_path ) {
-		$full_path = RESEND__PLUGIN_DIR . $relative_path;
+		$full_path = RESEND_PLUGIN_DIR . $relative_path;
 
 		return RESEND_VERSION;
 	}

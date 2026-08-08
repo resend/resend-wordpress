@@ -17,6 +17,14 @@
  * Text Domain: resend
  */
 
+if ( ! defined( 'RESEND_PLUGIN_DIR' ) ) {
+	define( 'RESEND_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
+}
+
+if ( ! defined( 'RESEND_VERSION' ) ) {
+	define( 'RESEND_VERSION', '1.0.0' );
+}
+
 if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
 }
@@ -26,9 +34,6 @@ if ( ! function_exists( 'add_action' ) ) {
 	echo 'Hi there! I\'m just a plugin, not much I can do when called directly.';
 	exit;
 }
-
-define( 'RESEND_VERSION', '1.0.0' );
-define( 'RESEND__PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 
 if ( function_exists( 'wp_mail' ) ) {
 	/**
@@ -47,15 +52,15 @@ if ( function_exists( 'wp_mail' ) ) {
 register_activation_hook( __FILE__, array( 'Resend', 'plugin_activation' ) );
 register_deactivation_hook( __FILE__, array( 'Resend', 'plugin_deactivation' ) );
 
-require_once RESEND__PLUGIN_DIR . 'class-resend.php';
+require_once RESEND_PLUGIN_DIR . 'class-resend.php';
 
 add_action( 'init', array( 'Resend', 'init' ) );
 
 if ( is_admin() ) {
-	require_once RESEND__PLUGIN_DIR . 'class-resend-admin.php';
+	require_once RESEND_PLUGIN_DIR . 'class-resend-admin.php';
 	add_action( 'init', array( 'Resend_Admin', 'init' ) );
 }
 
 if ( ! function_exists( 'wp_mail' ) ) {
-	include RESEND__PLUGIN_DIR . 'wp-mail.php';
+	include RESEND_PLUGIN_DIR . 'wp-mail.php';
 }
