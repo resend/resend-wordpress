@@ -18,7 +18,13 @@ jobs:
 
     strategy:
       matrix:
-        php: ['8.0', '8.1', '8.2', '8.3', '8.4', '8.5']
+        php: ['7.2', '7.3', '7.4', '8.0', '8.1', '8.2', '8.3', '8.4', '8.5']
+        wp: ['latest']
+        exclude:
+          - php: '7.2'
+            wp: 'latest'
+          - php: '7.3'
+            wp: 'latest'
 
     services:
       database:
@@ -29,7 +35,7 @@ jobs:
         ports:
           - 3306:3306
 
-    name: PHP ${{ matrix.php }}
+    name: PHP ${{ matrix.php }} ${{ matrix.wp != '' && format( ' (WP {0}) ', matrix.wp ) || '' }}
 
     steps:
       - name: Checkout code
@@ -56,7 +62,7 @@ jobs:
         run: composer update --no-interaction --prefer-dist
 
       - name: Setup tests
-        run: bash bin/install-wp-tests.sh wordpress_tests root root 127.0.0.1 latest true
+        run: bash bin/install-wp-tests.sh wordpress_tests root root 127.0.0.1 ${{ matrix.wp }} true
 
       - name: Execute tests
-        run: composer test
+        run: composer run test
