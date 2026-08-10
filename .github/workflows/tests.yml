@@ -17,18 +17,36 @@ jobs:
     timeout-minutes: 10
 
     strategy:
+      fail-fast: false
+      # Each PHP version is paired with the minimum WordPress version that
+      # supports it, per https://make.wordpress.org/core/handbook/references/php-compatibility-and-wordpress-versions/
+      # For PHP versions where WP core's true minimum is older than 5.9, we
+      # floor at 5.9 instead, since that's this plugin's own declared
+      # minimum ("Requires at least" in readme.txt)
       matrix:
-        php: ['7.2', '7.3', '7.4', '8.0', '8.1', '8.2', '8.3', '8.4', '8.5']
-        wp: ['latest']
-        exclude:
+        include:
           - php: '7.2'
-            wp: 'latest'
+            wp: '5.9'
           - php: '7.3'
-            wp: 'latest'
+            wp: '5.9'
+          - php: '7.4'
+            wp: '5.9'
+          - php: '8.0'
+            wp: '5.9'
+          - php: '8.1'
+            wp: '5.9'
+          - php: '8.2'
+            wp: '6.1'
+          - php: '8.3'
+            wp: '6.4'
+          - php: '8.4'
+            wp: '6.7'
+          - php: '8.5'
+            wp: '6.9'
 
     services:
       database:
-        image: mysql:latest
+        image: mysql:8.0
         env:
           MYSQL_DATABASE: wordpress_tests
           MYSQL_ROOT_PASSWORD: root
@@ -39,24 +57,24 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v6
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       - name: Setup PHP
-        uses: shivammathur/setup-php@v2
+        uses: shivammathur/setup-php@f3e473d116dcccaddc5834248c87452386958240 # 2.37.2
         with:
           php-version: ${{ matrix.php }}
-          tools: phpunit-polyfills:1.1
 
       - name: Get Composer cache directory
         id: composer-cache
         run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
 
       - name: Cache dependencies
-        uses: actions/cache@v5
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: ${{ steps.composer-cache.outputs.dir }}
           key: dependencies-php-${{ matrix.php }}-composer-${{ hashFiles('**/composer.json') }}
-          restore-keys: ${{ runner.os }}-composer-
+          restore-keys: |
+            dependencies-php-${{ matrix.php }}-composer-
 
       - name: Install dependencies
         run: composer update --no-interaction --prefer-dist
