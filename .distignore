@@ -3,6 +3,8 @@
 /.github/
 /.vscode/
 /.wordpress-org/
+/bin/
+/tests/
 /vendor/
 
 # Files
@@ -14,3 +16,4 @@
 /README.md
 /renovate.json
 /phpcs*
+/phpunit*
