@@ -1,2 +1,6 @@
-.DS_Store
+# Directories
 /vendor/
+
+# Files
+.DS_Store
+.phpunit.result.cache

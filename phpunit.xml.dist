@@ -6,11 +6,11 @@
 	convertErrorsToExceptions="true"
 	convertWarningsToExceptions="true"
 	convertNoticesToExceptions="true"
-	convertDeprecationsToExceptions="true"
+	cacheResultFile="./tests/.phpunit.result.cache"
 	>
 	<testsuites>
-		<testsuite name="testing">
-			<directory prefix="test-" suffix=".php">./tests/</directory>
+		<testsuite name="All Tests">
+			<directory suffix=".php">./tests/</directory>
 		</testsuite>
 	</testsuites>
 </phpunit>
