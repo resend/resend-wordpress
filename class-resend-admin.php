@@ -232,9 +232,6 @@ class Resend_Admin {
 
 	/**
 	 * Get the JSON status payload for the given type.
-	 */
-	/**
-	 * Get the JSON status payload for the given type.
 	 *
 	 * @param string      $type    Status type key.
 	 * @param string|null $message Optional override message.
@@ -254,11 +251,6 @@ class Resend_Admin {
 		);
 	}
 
-	/**
-	 * Get the status message based on the given type or use the provided message.
-	 *
-	 * @return string
-	 */
 	/**
 	 * Get the human-readable status message for a notice.
 	 *
@@ -324,9 +316,6 @@ class Resend_Admin {
 		return $message;
 	}
 
-	/**
-	 * Add help to the Resend page.
-	 */
 	/**
 	 * Register help tabs and sidebar content for the Resend admin page.
 	 *
