@@ -302,10 +302,16 @@ class Resend_Admin {
 				$message = __( 'Unable to update your API key.', 'resend' );
 				break;
 			case 'new-key-empty':
-				$message = __( 'You did not enter an API key. Please try again.', 'resend' );
+				$message = __( 'You did not enter an API key. Your existing key was left unchanged.', 'resend' );
 				break;
 			case 'new-key-invalid':
 				$message = __( 'The API key you entered is invalid. Please double-check it.', 'resend' );
+				break;
+			case 'key-removed':
+				$message = __( 'Your Resend API key has been removed.', 'resend' );
+				break;
+			case 'key-locked':
+				$message = __( 'Your API key is managed with the RESEND_API_KEY constant in wp-config.php and cannot be changed from this page.', 'resend' );
 				break;
 			case 'test-email-not-set':
 				$message = __( 'Please provide a valid email address to send a test email.', 'resend' );
@@ -404,19 +410,35 @@ class Resend_Admin {
 
 		check_admin_referer( self::NONCE );
 
+		// The RESEND_API_KEY constant always wins over the database, so saving or
+		// removing the stored option here would silently have no real effect. Refuse
+		// both server-side rather than relying on the disabled admin UI.
+		if ( Resend::is_api_key_locked() ) {
+			wp_send_json_error( self::json_status( 'key-locked' ) );
+		}
+
+		$is_removal = isset( $_POST['remove'] ) && '1' === sanitize_text_field( wp_unslash( $_POST['remove'] ) );
+
+		if ( $is_removal ) {
+			if ( ! empty( get_option( 'resend_api_key' ) ) ) {
+				delete_option( 'resend_api_key' );
+			}
+
+			wp_send_json_success( self::json_status( 'key-removed' ) );
+		}
+
 		$new_key = sanitize_text_field( isset( $_POST['key'] ) ? wp_unslash( $_POST['key'] ) : '' );
 		$old_key = Resend::get_api_key();
 
 		$result = array( false, 'no-change-to-key' );
 
 		if ( empty( $new_key ) ) {
-			if ( ! empty( $old_key ) ) {
-				delete_option( 'resend_api_key' );
-			}
+			// The field is now always rendered empty, so a blank submission no longer
+			// means "delete the key" -- it means the admin did not intend to change it.
 			$result = array( false, 'new-key-empty' );
 		} elseif ( $new_key !== $old_key ) {
 			if ( Resend::is_valid_key( $new_key ) ) {
-				update_option( 'resend_api_key', $new_key );
+				update_option( 'resend_api_key', $new_key, false );
 				$result = array( true, 'new-key-valid' );
 			} else {
 				$result = array( false, 'new-key-invalid' );

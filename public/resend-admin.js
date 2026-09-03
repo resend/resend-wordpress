@@ -80,6 +80,28 @@ jQuery(function ($) {
 		);
 	});
 
+	$("#resend-remove-api-key").on("click", function (e) {
+		e.preventDefault();
+		const $button = $(this);
+		setButtonLoading($button, "Removing...");
+		$.post(
+			resendAjax.ajax_url,
+			{
+				action: "resend_enter_key",
+				_wpnonce: resendAjax.nonce,
+				remove: 1,
+			},
+			function (response) {
+				displayAlert(response.data?.message, response.success);
+				if (response.success) {
+					window.location.reload();
+				}
+			}
+		).always(function () {
+			resetButton($button);
+		});
+	});
+
 	$("#resend-test-email-form").on("submit", function (e) {
 		e.preventDefault();
 		const $form = $(this);
@@ -138,20 +160,3 @@ jQuery(function ($) {
 		}, 500);
 	});
 });
-
-function resendTogglePassword(element, inputId) {
-	const input = document.getElementById(inputId);
-
-	const showIcon = element.querySelector("#show-password");
-	const hideIcon = element.querySelector("#hide-password");
-
-	if (input.type === "password") {
-		input.type = "text";
-		showIcon.style.display = "none";
-		hideIcon.style.display = "inline-flex";
-	} else {
-		input.type = "password";
-		showIcon.style.display = "inline-flex";
-		hideIcon.style.display = "none";
-	}
-}
