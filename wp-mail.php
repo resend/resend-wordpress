@@ -113,7 +113,7 @@ function wp_mail( $to, $subject, $message, $headers = '', $attachments = array()
 		$from_name = Resend::get_from_name();
 	}
 
-	if ( ! isset( $form_email ) ) {
+	if ( ! isset( $from_email ) ) {
 		$from_email = Resend::get_from_address();
 	}
 
