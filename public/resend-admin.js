@@ -24,14 +24,12 @@ jQuery(function ($) {
 					`<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m9.75 9.75 4.5 4.5m0-4.5-4.5 4.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" /></svg>`
 			  );
 
-		const $alert = $(`
-			<div class="resend-alert ${alertClass}">
-				<span class="resend-alert-icon"></span>
-				<p class="resend-alert-text">${message}</p>
-			</div>
-		`);
+		const $alert = $("<div>").addClass("resend-alert").addClass(alertClass);
+		const $alertIconContainer = $("<span>").addClass("resend-alert-icon");
+		const $alertText = $("<p>").addClass("resend-alert-text").text(message);
 
-		$alert.find(".resend-alert-icon").html($alertIcon);
+		$alertIconContainer.html($alertIcon);
+		$alert.append($alertIconContainer, $alertText);
 		$resendAlerts.html($alert);
 	}
 

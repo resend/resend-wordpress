@@ -27,15 +27,6 @@ class Resend_Admin {
 	private static $status = array();
 
 	/**
-	 * The list of allowed HTML.
-	 *
-	 * @var array
-	 */
-	private static $allowed = array(
-		'strong' => array(),
-	);
-
-	/**
 	 * Initialize the admin class.
 	 *
 	 * @return void
@@ -80,6 +71,7 @@ class Resend_Admin {
 			if ( ! headers_sent() ) {
 				$admin_url = self::get_page_url( 'init' );
 				wp_safe_redirect( $admin_url );
+				exit;
 			}
 		}
 	}
@@ -240,9 +232,6 @@ class Resend_Admin {
 
 	/**
 	 * Get the JSON status payload for the given type.
-	 */
-	/**
-	 * Get the JSON status payload for the given type.
 	 *
 	 * @param string      $type    Status type key.
 	 * @param string|null $message Optional override message.
@@ -263,17 +252,12 @@ class Resend_Admin {
 	}
 
 	/**
-	 * Get the status message based on the given type or use the provided message.
-	 *
-	 * @return string
-	 */
-	/**
 	 * Get the human-readable status message for a notice.
 	 *
 	 * @param string      $type    Status type key.
 	 * @param string|null $message Optional override message.
 	 *
-	 * @return string Sanitized status message.
+	 * @return string Unescaped status message. Callers must escape at the point of output.
 	 */
 	protected static function get_status_message( $type, $message = null ) {
 		if ( $message ) {
@@ -281,8 +265,8 @@ class Resend_Admin {
 				$message = $message['message'] ?? $message['error'];
 			}
 
-			$message = wp_kses( esc_html( $message ), self::$allowed );
-
+			// Returned unescaped: the view escapes with esc_attr() and the admin
+			// script renders it with .text(), so escaping here would double-encode.
 			return $message;
 		}
 
@@ -326,15 +310,12 @@ class Resend_Admin {
 				$message = __( 'Settings updated successfully', 'resend' );
 				break;
 			default:
-				$message = $type;
+				$message = __( 'Something went wrong. Please try again.', 'resend' );
 		}
 
 		return $message;
 	}
 
-	/**
-	 * Add help to the Resend page.
-	 */
 	/**
 	 * Register help tabs and sidebar content for the Resend admin page.
 	 *
