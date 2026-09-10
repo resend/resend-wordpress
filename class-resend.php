@@ -63,12 +63,37 @@ class Resend {
 	}
 
 	/**
-	 * Retrieve the stored Resend API key.
+	 * Retrieve the configured Resend API key.
 	 *
-	 * @return string|null The stored API key or null when not set.
+	 * When the `RESEND_API_KEY` constant is defined (typically in `wp-config.php`) with
+	 * a non-empty value, it always takes precedence over the value stored in the
+	 * database. This lets site owners keep the key out of the database, and therefore
+	 * out of database backups, entirely:
+	 *
+	 *     define( 'RESEND_API_KEY', 're_xxxxxxxxx' );
+	 *
+	 * The `resend_get_api_key` filter is still applied to the final value in either
+	 * case, so existing integrations relying on it continue to work.
+	 *
+	 * @return string|null The configured API key or null when not set.
 	 */
 	public static function get_api_key() {
-		return apply_filters( 'resend_get_api_key', get_option( 'resend_api_key' ) );
+		$api_key = self::is_api_key_locked() ? RESEND_API_KEY : get_option( 'resend_api_key' );
+
+		return apply_filters( 'resend_get_api_key', $api_key );
+	}
+
+	/**
+	 * Determine whether the API key is locked by the `RESEND_API_KEY` constant.
+	 *
+	 * When locked, the key defined in `wp-config.php` always overrides any value
+	 * stored in the database, and the admin UI must refuse to save or remove the
+	 * stored option so it does not misrepresent what key is actually in use.
+	 *
+	 * @return bool True when the `RESEND_API_KEY` constant is defined and non-empty.
+	 */
+	public static function is_api_key_locked() {
+		return defined( 'RESEND_API_KEY' ) && '' !== RESEND_API_KEY;
 	}
 
 	/**

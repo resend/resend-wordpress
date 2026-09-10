@@ -14,6 +14,14 @@ $current_user_email = $current_wp_user->user_email;
 
 $notice_message    = isset( $notice ) && isset( $notice['message'] ) ? $notice['message'] : null;
 $notice_is_success = isset( $notice ) && isset( $notice['success'] ) ? $notice['success'] : false;
+
+// The stored API key is never printed back into the page. When one is set, a fixed-width
+// mask communicates that without leaking its length or any of its characters.
+$resend_api_key_locked      = Resend::is_api_key_locked();
+$resend_stored_api_key      = get_option( 'resend_api_key' );
+$resend_has_active_api_key  = (bool) Resend::get_api_key();
+$resend_show_remove_button  = ! $resend_api_key_locked && ! empty( $resend_stored_api_key );
+$resend_api_key_placeholder = $resend_has_active_api_key ? 're_' . str_repeat( '•', 14 ) : '';
 ?>
 <div class="resend-plugin-container">
 	<div class="resend-config-container">
@@ -84,24 +92,23 @@ $notice_is_success = isset( $notice ) && isset( $notice['success'] ) ? $notice['
 				<div class="resend-card-content" style="display: none">
 					<p><?php esc_html_e( 'Manage the API key used to connect your site to Resend.', 'resend' ); ?></p>
 
+					<?php if ( $resend_api_key_locked ) : ?>
+						<p class="resend-setup-steps-desc"><?php esc_html_e( 'This API key is managed in wp-config.php and cannot be changed from this page.', 'resend' ); ?></p>
+					<?php endif; ?>
+
 					<form id="resend-api-key-form" class="resend-form" autocomplete="off" method="post">
 						<div>
 							<label for="resend_api_key" class="resend-label"><?php esc_html_e( 'API Key', 'resend' ); ?></label>
 							<div style="display: flex; align-items: center; gap: 6px;">
-								<input id="resend_api_key" name="key" type="password" class="resend-input" value="<?php echo esc_attr( get_option( 'resend_api_key' ) ); ?>" autocomplete="off" data-1p-ignore data-lpignore="true" data-protonpass-ignore="true">
-								<button type="button" class="resend-button" onclick="resendTogglePassword(this, 'resend_api_key')" style="padding-left: 7px; padding-right: 7px;">
-									<span id="show-password" style="display: inline-flex;">
-										<?php Resend::view( 'icon', array( 'icon' => 'eye' ) ); ?>
-									</span>
-									<span id="hide-password" style="display: none;">
-										<?php Resend::view( 'icon', array( 'icon' => 'eye-slash' ) ); ?>
-									</span>
-								</button>
+								<input id="resend_api_key" name="key" type="password" class="resend-input" value="" placeholder="<?php echo esc_attr( $resend_api_key_placeholder ); ?>" autocomplete="off" data-1p-ignore data-lpignore="true" data-protonpass-ignore="true" <?php disabled( $resend_api_key_locked ); ?> <?php wp_readonly( $resend_api_key_locked ); ?>>
 							</div>
 						</div>
 
-						<div>
-							<input type="submit" class="resend-button is-primary" value="<?php esc_attr_e( 'Save changes', 'resend' ); ?>">
+						<div style="display: flex; align-items: center; gap: 8px;">
+							<input type="submit" class="resend-button is-primary" value="<?php esc_attr_e( 'Save changes', 'resend' ); ?>" <?php disabled( $resend_api_key_locked ); ?>>
+							<?php if ( $resend_show_remove_button ) : ?>
+								<button type="button" id="resend-remove-api-key" class="resend-button"><?php esc_html_e( 'Remove API key', 'resend' ); ?></button>
+							<?php endif; ?>
 						</div>
 					</form>
 				</div>
