@@ -46,6 +46,7 @@ if ( function_exists( 'wp_mail' ) ) {
 
 register_activation_hook( __FILE__, array( 'Resend', 'plugin_activation' ) );
 register_deactivation_hook( __FILE__, array( 'Resend', 'plugin_deactivation' ) );
+register_uninstall_hook( __FILE__, array( 'Resend', 'plugin_uninstall' ) );
 
 require_once RESEND__PLUGIN_DIR . 'class-resend.php';
 

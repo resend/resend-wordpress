@@ -63,6 +63,36 @@ class Resend {
 	}
 
 	/**
+	 * Handle plugin uninstall tasks.
+	 *
+	 * @return void
+	 */
+	public static function plugin_uninstall() {
+		if ( is_multisite() ) {
+			$site_ids = get_sites( array( 'fields' => 'ids' ) );
+
+			foreach ( $site_ids as $site_id ) {
+				switch_to_blog( $site_id );
+				self::delete_plugin_data();
+				restore_current_blog();
+			}
+		} else {
+			self::delete_plugin_data();
+		}
+	}
+
+	/**
+	 * Delete all Resend plugin options for the current site.
+	 *
+	 * @return void
+	 */
+	private static function delete_plugin_data() {
+		delete_option( 'resend_api_key' );
+		delete_option( 'resend_from_name' );
+		delete_option( 'resend_from_address' );
+	}
+
+	/**
 	 * Retrieve the stored Resend API key.
 	 *
 	 * @return string|null The stored API key or null when not set.

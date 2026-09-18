@@ -5,7 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [1.0.0] - 2024
+## [1.1.0] - July 31, 2026
+
+### Added
+
+- Uninstall handler (via `register_uninstall_hook`) to remove Resend WordPress Plugin's stored options (`resend_api_key`, `resend_from_name`, `resend_from_address`) when the plugin is deleted ([#11](https://github.com/resend/resend-wordpress/issues/11))
+
+## [1.0.0] - July 26, 2026
 
 ### Added
 - Initial release of Resend WordPress Plugin
