@@ -32,7 +32,7 @@ class Resend {
 			$$key = $val;
 		}
 
-		$file = RESEND__PLUGIN_DIR . 'views/' . basename( $name ) . '.php';
+		$file = RESEND_PLUGIN_DIR . 'views/' . basename( $name ) . '.php';
 
 		if ( file_exists( $file ) ) {
 			include $file;
